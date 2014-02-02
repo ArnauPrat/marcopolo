@@ -21,13 +21,11 @@ Copyright notice:
 **/
 
 #include "MPPrimitiveTests.h"
-#include "complex"
 
-namespace mp
-{
-    bool TestAABBvsAABB( const Point2D& minA, const Point2D& maxA, const Point2D minB, const Point2 maxB ) {
-        if( maxA.m_X < minB.m_X || minA.m_X > maxB.m_X ) return false;
-        if( maxA.m_Y < minB.m_Y || minA.m_Y > maxB.m_Y ) return false;
+bool    TestAABBvsAABB( const mpAABB& a, const mpAABB& b ) {
+        if( (a.m_Center.m_X + a.m_ExtX) < (b.m_Center.m_X - b.m_ExtX) ||
+            (b.m_Center.m_X + b.m_ExtX) < (a.m_Center.m_X - a.m_ExtX) ) return false;
+        if( (a.m_Center.m_Y + a.m_ExtY) < (b.m_Center.m_Y - b.m_ExtY) ||
+            (b.m_Center.m_Y + b.m_ExtY) < (a.m_Center.m_Y - a.m_ExtY) ) return false;
         return true;
-    }
 }

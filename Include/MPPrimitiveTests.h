@@ -25,16 +25,13 @@ Copyright notice:
 
 #include "MPTypes.h"
 
-namespace mp
-{
 
-            /// @brief Tests if two AABBs specified by min/max points intersect.
-            /// @param[in] minA The lower left corner of the first AABB.
-            /// @param[in] maxA The upper right corner of the first AABB.
-            /// @param[in] minB The lower left corner of the second AABB.
-            /// @param[in] maxB The upper right corner of the second AABB.
-    bool    TestAABBvsAABB( const Point2D& minA, const Point2D& maxA, const Point2D minB, const Point2D maxB );
+/// @brief Tests if two AABBs specified by min/max points intersect.
+/// @param[in] minA The lower left corner of the first AABB.
+/// @param[in] maxA The upper right corner of the first AABB.
+/// @param[in] minB The lower left corner of the second AABB.
+/// @param[in] maxB The upper right corner of the second AABB.
+bool    TestAABBvsAABB( const mpAABB& a, const mpAABB& b );
 
-}
 
 #endif
