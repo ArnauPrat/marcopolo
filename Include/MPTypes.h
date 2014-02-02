@@ -31,29 +31,43 @@ Copyright notice:
 #define MP_INVALID_ID 0xffff
 */
 
-#include "vector"
-
 namespace mp
 {
-    #typedef MPId unsigned short ///@brief The internal identifier type.
+    struct mpVector;
 
-    /// @brief Represents a two-dimensional vector.
-    struct Vector2D {
+    #typedef mpVector mpPoint
+
+    /// @brief A two-dimensional vector.
+    struct mpVector {
         float m_X;  ///< @brief The x coordinate of the vector.
         float m_Y;  ///< @brief The y coordinate of the vector.
     };
-    #typedef Vector2D Point2D
 
-    class Polygon{
-    public:
-      Polygon( const Point2D* vertices, const unsigned int numVertices );
-      ~Polygon();
-      
-      std::vector<Point2D>  m_Points;
-
+    /// @brief A polygon.
+    struct mpPolygon {
+        mpPoint*        m_Vertices;        ///< @brief The array of vertices that form the polygon in clockwise order.
+        unsigned short  m_NumVertices; ///< @brief The number of vertices of the polygon.
     };
 
+    /// @brief A navigation mesh.
+    struct mpNavMesh {
+    };
 
+    /// @brief An axis aligned bounding box.
+    struct mpAABB {
+      mpPoint   m_Center;
+      float     m_ExtX;
+      float     m_ExtY;
+    };
+
+    /// @brief Allocates a polygon.
+    /// @return A pointer to the allocated polygon.
+    mpPolygon* mpAllocatePolygon();
+
+
+    /// @bief Frees a polygon.
+    /// @param polygon The polygon to free.
+    void mpFreePolygon( mpPolygon* polygon );
 }
 
 #endif 

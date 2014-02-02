@@ -25,28 +25,10 @@ Copyright notice:
 
 #include "MPTypes.h"
 
-namespace mp
-{
-            /// @brief Extracs the bounding box of a polygon.
-            /// @param[in] vertices The vertices that form the polygon.
-            /// @param[in] numVertices The number of vertices of the polygon.
-            /// @param[out] min The lower left corner of the boundfing box containing the whole polygon.
-            /// @param[out] max The lower left corner of the boundfing box containing the whole polygon.
-    void    ExtractBoundingBox( const Point2D* vertices, const unsigned int numVertices, Point2D& min, Point2D& max );
-
-            /// @brief Extracs the bounding box of a polygon.
-            /// @param[in] vertices The vertices that form the polygon.
-            /// @param[in] numVertices The number of vertices of the polygon.
-            /// @param[out] min The lower left corner of the boundfing box containing the whole polygon.
-            /// @param[out] max The lower left corner of the boundfing box containing the whole polygon.
-            /// @param[in] margin The size of the margin to add to bounding boxes. 
-    void    ExtractBoundingBox( const Point2D* vertices, const unsigned int numVertices, Point2D& min, Point2D& max, const float margin );
-
-
-    
-
-
-}
+/// @brief Extracs the bounding box of a polygon.
+/// @param[in] The polygon.
+/// @return The AABB bounding box of the polygon.
+mpAABB  ExtractBoundingBox( const mpPolygon* polygon );
 
 #endif
 

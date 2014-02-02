@@ -21,42 +21,30 @@ Copyright notice:
 **/
 
   #include "MPUtils.h"
+  #include <stdlio.h>
+  #include <assert.h>
 
- namespace mp 
- {
 
-    void    ExtractBoundingBox( const Point2D* vertices, const unsigned int numVertices, Point2D& min, Point2D& max ) {
-        assert(numVertices > 0)
-        min.m_X = vertices[0].m_X;
-        min.m_Y = vertices[0].m_Y;
-        max.m_X = vertices[0].m_X;
-        max.m_Y = vertices[0].m_Y;
-        for ( unsigned int i = 1; i < numVertices; ++i ) {
-            if( vertices[i].m_X < min.m_X ) min.m_X = vertices[i].m_X;
-            if( vertices[i].m_Y < min.m_Y ) min.m_Y = vertices[i].m_Y;
-            if( vertices[i].m_X > max.m_X ) max.m_X = vertices[i].m_X;
-            if( vertices[i].m_Y > max.m_Y ) max.m_Y = vertices[i].m_Y;
-        }
-        return;
+  mpAABB  ExtractBoundingBox( const mpPolygon* polygon ) {
+    assert(polygon != NULL);
+    assert(polygon->m_NumVertices > 0);
+    assert(polygon->m_Vertices != NULL);
+    mpPoint min, 
+            max;
+    min.m_X = polygon->m_Vertices[0].m_X;
+    min.m_Y = polygon->m_Vertices[0].m_Y;
+    max.m_X = polygon->m_Vertices[0].m_X;
+    max.m_Y = polygon->m_Vertices[0].m_Y;
+    for ( unsigned int i = 1; i < polygon->m_NumVertices; ++i ) {
+      if( polygon->m_Vertices[i].m_X < min.m_X ) min.m_X = polygon->m_Vertices[i].m_X;
+      if( polygon->m_Vertices[i].m_Y < min.m_Y ) min.m_Y = polygon->m_Vertices[i].m_Y;
+      if( polygon->m_Vertices[i].m_X > max.m_X ) max.m_X = polygon->m_Vertices[i].m_X;
+      if( polygon->m_Vertices[i].m_Y > max.m_Y ) max.m_Y = polygon->m_Vertices[i].m_Y;
     }
-
-    void    ExtractBoundingBox( const Point2D* vertices, const unsigned int numVertices, Point2D& min, Point2D& max, const float margin ) {
-        assert(numVertices > 0)
-        min.m_X = vertices[0].m_X;
-        min.m_Y = vertices[0].m_Y;
-        max.m_X = vertices[0].m_X;
-        max.m_Y = vertices[0].m_Y;
-        for ( unsigned int i = 1; i < numVertices; ++i ) {
-            if( vertices[i].m_X < min.m_X ) min.m_X = vertices[i].m_X;
-            if( vertices[i].m_Y < min.m_Y ) min.m_Y = vertices[i].m_Y;
-            if( vertices[i].m_X > max.m_X ) max.m_X = vertices[i].m_X;
-            if( vertices[i].m_Y > max.m_Y ) max.m_Y = vertices[i].m_Y;
-        }
-        min.m_X -= margin;
-        min.m_Y -= margin;
-        max.m_X += margin;
-        max.m_Y += margin;
-        return;
-    }
-
- } 
+    mpAABB aabb;
+    aabb.m_ExtX = abs((max.m_X - min.m_X) / 2.0f);
+    aabb.m_ExtY = abs((max.m_Y - min.m_Y) / 2.0f);
+    aabb.m_Center.m_X = min.m_X + aabb.m_ExtX ;
+    aabb.m_Center.m_Y = min.m_Y + aabb.m_ExtY;
+    return aabb;
+  }

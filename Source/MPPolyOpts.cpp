@@ -22,37 +22,15 @@ Copyright notice:
 
 
 #include "MPPolyOpts.h"
-#include "vector"
+#include <assert.h>
 
+mpPolygon* mpPolygonUnion( const mpolygon* polygonA, const mpPolygon* polygonB ) {
+  assert(false);
+  return NULL;
+}
 
-namespace mp 
-{
-    void PolygonUnion( const Point2D* vertices, const unsigned int numVertices,
-                       const unsigned int* indices, const unsigned int numPolygons ) {
+mpPolygon* mpPolygonUnion( const mpPolygon* polygons, const unsigned int numPolygons) {
+  assert(false);
+  return NULL;
+}
 
-        /// Extract vertices and edges from the polygons.
-        std::vector< Point2D > points(numVertices);
-        for( unsigned int i = 0; i < numVertices; ++i ) {
-            points.push_back( vertices[i] );
-        }
-
-        std::vector< Edge > edges;
-        for ( unsigned int i = 0; i < (numPolygons - 1); ++i ) {
-            for( unsigned int j = indices[i]; j < indices[i+1]; ++j ) {
-                Edge edge;
-                edge.m_A = j;
-                edge.m_B = j+1;
-                edges.push_back(edge);
-            } 
-        }
-
-        for( unsigned int j = indices[numPolygons - 1]; j < numVertices; ++j ) {
-                Edge edge;
-                edge.m_A = j;
-                edge.m_B = j+1;
-                edges.push_back(edge);
-        } 
-
-        for( unsigned int i = 0; i < )
-    }
-}  

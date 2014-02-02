@@ -26,27 +26,17 @@ Copyright notice:
 
 #include "MPTypes.h"
 
-namespace mp
-{
+/// @brief Computes the union of two polygons.
+/// @param[in] polygonA The first polygon of the union.
+/// @param[in] polygonB The second polygon of the union.
+/// @return A new polygon containing the union
+mpPolygon* mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB );
 
-         /// @brief Given a set of polygons, this operation returns the union of the polygons.
-         /// @param[in] vertices An array containing the vertices that form the polygons. These must be in clockwise order.
-         /// @param[in] indices An array indices indicating the first vertex that form the polygon.
-         /// @param[in] numPolygons The size of the array of indices.
-    void PolygonUnion( const Point2D* vertices, const unsigned int numVertices,
-                       const unsigned int* indices, const unsigned int numPolygons );
-
-
-         /// @brief Computes the union of two polygons.
-         /// @param[in] verticesA The vertices of the first polygon in clockwise order.
-         /// @param[in] numVerticesA The number of vertices of the first polygon.
-         /// @param[in] verticesB The vertices of the second polygon in clockwise order.
-         /// @param[in] numVerticesB The number of vertices of the second polygon.
-    void PolygonUnion( const Point2D* verticesA, const unsigned int numVerticesA
-                       const Point2D* verticesB, const unsigned int numVerticesB) {
-        
-    }
-}
+/// @brief Computes the union of a set of polygons.
+/// @param[in] polygons The array of polygons to compute the union.
+/// @param[in] numPolygons The number of polygons in the array.
+/// @return A new polygon containing the union.
+mpPolygon* mpPolygonUnion( const mpPolygon* polygons, const unsigned int numPolygons);
 
 #endif
 
