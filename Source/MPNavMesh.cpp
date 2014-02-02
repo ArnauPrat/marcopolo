@@ -27,9 +27,10 @@ Copyright notice:
 namespace mp 
 {
 
-    NavMesh::NavMesh( const Point2D& min, const Point2D& max ) :
+    NavMesh::NavMesh( const Point2D& min, const Point2D& max, const float margin ) :
                 m_Min(min),
-                m_Max(max) {
+                m_Max(max),
+                m_Margin(margin) {
 
     }
 
@@ -42,7 +43,7 @@ namespace mp
        assert(vertices != NULL) 
        assert(indices != NULL)
        assert(numVertices < (1 << sizeof(MPId)*8 ))
-
+/*
        // First we process the input data so that all the obstacles fit inside the NavMesh bounding box
        // and fix the possible overlaps between obstacles.
 
@@ -88,6 +89,7 @@ namespace mp
 
 
        }
+       */
     }
 
 }

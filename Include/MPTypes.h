@@ -23,11 +23,15 @@ Copyright notice:
 #ifndef MPTYPES_H
 #define MPTYPES_H
 
-#ifndef MP_MAX_POLY_SIZE 
+/*#ifndef MP_MAX_POLY_SIZE 
 #define MP_MAX_POLY_SIZE 6
 #endif
 
+
 #define MP_INVALID_ID 0xffff
+*/
+
+#include "vector"
 
 namespace mp
 {
@@ -38,13 +42,18 @@ namespace mp
         float m_X;  ///< @brief The x coordinate of the vector.
         float m_Y;  ///< @brief The y coordinate of the vector.
     };
+    #typedef Vector2D Point2D
 
-    struct Polygon {
-        MPId m_Vertices[MP_MAX_POLY_SIZE];    ///@brief The ids of the vertices that form the polygon in clockwise order.
-        MPId m_Adjacencies[MP_MAX_POLY_SIZE]; ///@brief The polygon id adjacent to each edge of the polygon.
+    class Polygon{
+    public:
+      Polygon( const Point2D* vertices, const unsigned int numVertices );
+      ~Polygon();
+      
+      std::vector<Point2D>  m_Points;
+
     };
 
-    #typedef Vector2D Point2D
+
 }
 
 #endif 

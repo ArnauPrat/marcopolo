@@ -40,4 +40,23 @@ Copyright notice:
         return;
     }
 
+    void    ExtractBoundingBox( const Point2D* vertices, const unsigned int numVertices, Point2D& min, Point2D& max, const float margin ) {
+        assert(numVertices > 0)
+        min.m_X = vertices[0].m_X;
+        min.m_Y = vertices[0].m_Y;
+        max.m_X = vertices[0].m_X;
+        max.m_Y = vertices[0].m_Y;
+        for ( unsigned int i = 1; i < numVertices; ++i ) {
+            if( vertices[i].m_X < min.m_X ) min.m_X = vertices[i].m_X;
+            if( vertices[i].m_Y < min.m_Y ) min.m_Y = vertices[i].m_Y;
+            if( vertices[i].m_X > max.m_X ) max.m_X = vertices[i].m_X;
+            if( vertices[i].m_Y > max.m_Y ) max.m_Y = vertices[i].m_Y;
+        }
+        min.m_X -= margin;
+        min.m_Y -= margin;
+        max.m_X += margin;
+        max.m_Y += margin;
+        return;
+    }
+
  } 

@@ -31,7 +31,8 @@ namespace mp
     public:
         /// @param[in] min The lower left corner delimiting the bounding box of the NavMesh.
         /// @param[in] max The upper right corner delimiting the bounding box of the NavMesh.
-        NavMesh( const Point2D& min, const Point2D& max );
+        /// @param[in] margin The minimum distance between two points in order to be considered different.
+        NavMesh( const Point2D& min, const Point2D& max, const float margin );
         ~NavMesh();
 
         /// @brief Adds a chunk of static obstacles into the nav mesh. 
@@ -45,6 +46,7 @@ namespace mp
     private:
         const Point2D   m_Min;          ///< @brief The lower left corner of the bounding box delimiting the NavMesh.
         const Point2D   m_Max;          ///< @brief The upper right corner of the bounding box delimiting the NavMesh.
+        const float     m_Margin;       ///< @brief The margin to add to obstacles.
         Polygon*        m_Polygons;     ///< @brief The array of polygons that form the NavMesh.      
         Point2D*        m_Vertices;     ///< @brief The array of vertices that form the NavMesh.
     };
