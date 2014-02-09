@@ -22,6 +22,7 @@ Copyright notice:
 
 
 #include "MPPolyOpts.h"
+#include "MPPriorityQueue.h"
 #include <assert.h>
 
   /// @brief  This struct represents a sweep event in the Plane Sweep based algorithm
@@ -31,13 +32,66 @@ Copyright notice:
   struct mpSweepEvent {
     unsigned short  m_Point;
     mpSweepEvent*   m_Other;
-    bool            m_Left;
+    int             m_Left;
     mpPolygon*      m_Polygon;
   };
 
+  static int CompareSweepEvents( void* a, void* b ) {
+      const mpSweepEvent* eventA = (mpSweepEvent*)a;
+      const mpSweepEvent* eventB = (mpSweepEvent*)b;
+      if(eventA->m_Polygon->m_Vertices[eventA->m_Point].m_X < 
+         eventB->m_Polygon->m_Vertices[eventB->m_Point].m_X) return 1;
+      if(eventA->m_Polygon->m_Vertices[eventA->m_Point].m_X > 
+         eventB->m_Polygon->m_Vertices[eventB->m_Point].m_X) return 0;
+      if(eventA->m_Polygon->m_Vertices[eventA->m_Point].m_Y < 
+         eventB->m_Polygon->m_Vertices[eventB->m_Point].m_Y) return 1;
+      if(eventA->m_Polygon->m_Vertices[eventA->m_Point].m_Y > 
+         eventB->m_Polygon->m_Vertices[eventB->m_Point].m_Y) return 0;
+      return 1;
+  }
 
   mpPolygon* mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB ) {
     assert(false);
+    unsigned short numEventsA = polygonA->m_NumVertices*2;
+    unsigned short numEventsB = polygonB->m_NumVertices*2;
+    mpPriorityQueue* pq = mpAllocatePQ( numEventsA + numEventsB, CompareSweepEvents A);
+    mpSweepEvent*  sweepEvents = (mpSweepEvent*)malloc(sizeof(mpSweepEvent)*(numEventsA+numEventsB));
+    unsigned short i;
+    for( i=0; i < numEventsA + numEventsB; i+=2 ) { 
+      unsigned short idx1; = i;
+      unsigned short idx2; = i+1;
+      unsigned short polyIndex;
+      mpPolygon* polygon;
+      if( i < numEventsA ){
+        polygon = polygonA;
+        polyIndex = i;
+      } else {
+        polygon = polygonB;
+        polyIndex = i - numEventsA;
+      }
+      sweepEvents[idx1].m_Point = polyIndex; 
+      sweepEvents[idx2].m_Point = (polyIndex+1) % polygon->m_NumVertices; 
+      sweepEvents[idx1].m_Other = &sweepEvents[idx2];
+      sweepEvents[idx2].m_Other = &sweepEvents[idx1];
+      sweepEvents[idx1].m_Polygon = polygon;
+      sweepEvents[idx2].m_Polygon = polygon;
+      if( sweepEvents[idx1].m_Point.m_X < sweepEvents[idx2].m_Point.m_X ) {
+        sweepEvents[idx1].m_Left  = 1;
+        sweepEvents[idx2].m_Left  = 0;
+      } else {
+        sweepEvents[idx2].m_Left  = 1;
+        sweepEvents[idx1].m_Left  = 0;
+      }
+      mpInsertPQ(pq, &sweepEvents[idx1]);
+      mpInsertPQ(pq, &sweepEvents[idx2]);
+    }
+
+    while(mpPeekPQ(pq)){
+
+    }
+
+    free(sweepEvents); 
+    mpFreePQ(pq);
     return NULL;
   }
 
