@@ -23,51 +23,44 @@ Copyright notice:
 #ifndef MPTYPES_H
 #define MPTYPES_H
 
-/*#ifndef MP_MAX_POLY_SIZE 
-#define MP_MAX_POLY_SIZE 6
+#ifndef MP_MAX_POLY_SIZE 
+  #define MP_MAX_POLY_SIZE 0xffff 
 #endif
 
+struct mpVector;
 
-#define MP_INVALID_ID 0xffff
-*/
-
-namespace mp
-{
-    struct mpVector;
-
-    #typedef mpVector mpPoint
+#typedef mpVector mpPoint
 
     /// @brief A two-dimensional vector.
-    struct mpVector {
-        float m_X;  ///< @brief The x coordinate of the vector.
-        float m_Y;  ///< @brief The y coordinate of the vector.
-    };
+struct mpVector {
+  float m_X;  ///< @brief The x coordinate of the vector.
+  float m_Y;  ///< @brief The y coordinate of the vector.
+};
 
-    /// @brief A polygon.
-    struct mpPolygon {
-        mpPoint*        m_Vertices;        ///< @brief The array of vertices that form the polygon in clockwise order.
-        unsigned short  m_NumVertices; ///< @brief The number of vertices of the polygon.
-    };
+/// @brief A polygon.
+struct mpPolygon {
+  mpPoint*        m_Vertices;       ///< @brief The array of vertices that form the polygon in clockwise order.
+  unsigned short  m_NumVertices;    ///< @brief The number of vertices of the polygon.
+};
 
     /// @brief A navigation mesh.
-    struct mpNavMesh {
-    };
+struct mpNavMesh {
+};
 
     /// @brief An axis aligned bounding box.
-    struct mpAABB {
-      mpPoint   m_Center;
-      float     m_ExtX;
-      float     m_ExtY;
-    };
+struct mpAABB {
+  mpPoint   m_Center;   ///< @brief The center of the bounding box.
+  float     m_ExtX;     ///< @brief The extension in the X axis.
+  float     m_ExtY;     ///< @brief The extension in the Y axis.
+};
 
-    /// @brief Allocates a polygon.
-    /// @return A pointer to the allocated polygon.
-    mpPolygon* mpAllocatePolygon();
+/// @brief Allocates a polygon.
+/// @return A pointer to the allocated polygon.
+mpPolygon* mpAllocatePolygon();
 
 
-    /// @bief Frees a polygon.
-    /// @param polygon The polygon to free.
-    void mpFreePolygon( mpPolygon* polygon );
-}
+/// @bief Frees a polygon.
+/// @param polygon The polygon to free.
+void mpFreePolygon( mpPolygon* polygon );
 
 #endif 

@@ -24,13 +24,25 @@ Copyright notice:
 #include "MPPolyOpts.h"
 #include <assert.h>
 
-mpPolygon* mpPolygonUnion( const mpolygon* polygonA, const mpPolygon* polygonB ) {
-  assert(false);
-  return NULL;
-}
+  /// @brief  This struct represents a sweep event in the Plane Sweep based algorithm
+  ///         for boolean operations. The algorithm is based no that proposed in:
+  ///         "A new algorithm for computing Boolean operations on polygons" by
+  ///         Francisco Martínez, Antonio Jesús Rueda and Francisco Ramón Feito.
+  struct mpSweepEvent {
+    unsigned short  m_Point;
+    mpSweepEvent*   m_Other;
+    bool            m_Left;
+    mpPolygon*      m_Polygon;
+  };
 
-mpPolygon* mpPolygonUnion( const mpPolygon* polygons, const unsigned int numPolygons) {
-  assert(false);
-  return NULL;
-}
+
+  mpPolygon* mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB ) {
+    assert(false);
+    return NULL;
+  }
+
+  mpPolygon* mpPolygonUnion( const mpPolygon* polygons, const unsigned int numPolygons) {
+    assert(false);
+    return NULL;
+  }
 
