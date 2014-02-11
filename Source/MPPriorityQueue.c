@@ -78,7 +78,7 @@ void* mpPeekPQ( mpPriorityQueue* pq ) {
     return NULL;
 }
 
-void mpInsertPQ( mpPriorityQueue* pq, void* element ) {
+void mpPushPQ( mpPriorityQueue* pq, void* element ) {
     assert( pq != NULL );
     assert( pq->m_Size < pq->m_Capacity );
     pq->m_Data[pq->m_Size] = element;

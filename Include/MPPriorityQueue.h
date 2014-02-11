@@ -36,30 +36,28 @@ struct mpPriorityQueue {
 /// @param[in] comparator The comparator function used to set the priority between elements.
 mpPriorityQueue* mpAllocatePQ( unsigned short capacity, int (*comparator)( void*, void* ) ); 
 
-/// @brief Frees a priority queue.
+/// @brief            Frees a priority queue.
 /// @param[in,out] pq The priority queue frees.
 void mpFreePQ( mpPriorityQueue* pq );
 
-/// @brief Pops and returns the element at the top of the priority queue.
-/// @param[in] pq The priority queue to pop from.
-/// @return The element at the top of the queue.
+/// @brief        Pops and returns the element at the top of the priority queue.
+/// @param[in,out] pq The priority queue to pop from.
+/// @return       The element at the top of the queue.
 void* mpPopPQ( mpPriorityQueue* pq );
 
-/// @brief Returns the element at the top of the queue.
+/// @brief        Returns the element at the top of the queue.
 /// @param[in] pq The priority queue to peek from.
-/// @return The element at the top of the queue.
+/// @return       The element at the top of the queue.
 void* mpPeekPQ( mpPriorityQueue* pq );
 
-/// @brief Inserts an element into the priorit queue.
-/// @param[in] pq The priority queue to insert to.
-/// @param[in] element The element to insert.
-void mpInsertPQ( mpPriorityQueue* pq, void* element );
+/// @brief        Inserts an element into the priorit queue.
+/// @param[in,out] pq The priority queue to insert to.
+/// @param[in]    element The element to insert.
+void mpPushPQ( mpPriorityQueue* pq, void* element );
 
 /// @brief Clears a priority queue.
-/// @param[in] pq The priority queue to clear.
+/// @param[in,out] pq The priority queue to clear.
 void mpClearPQ( mpPriorityQueue* pq );
-
-
 
 #endif
 
