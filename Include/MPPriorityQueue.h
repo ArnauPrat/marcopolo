@@ -24,12 +24,12 @@ Copyright notice:
 #define MPPRIORITYQUEUE_H
 
 ///< @brief This struct represents a priority queue.
-struct mpPriorityQueue {
+typedef struct _mpPriorityQueue {
   void**            m_Data;                         ///< @brief The array containing the data.  
   unsigned short    m_Capacity;                     ///< @brief The capacity of the priority queue.
   unsigned short    m_Size;                         ///< @brief The size of the priority queue. 
   int               (*m_Comparator)( void*, void*); ///< @brief The comparator function.
-};
+} mpPriorityQueue;
 
 /// @brief Allocates a priority queue.
 /// @param[in] capacity The maximum capacity of the priority queue.
