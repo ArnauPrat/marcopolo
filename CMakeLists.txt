@@ -1,0 +1,6 @@
+CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
+PROJECT(marcopolo C)
+
+enable_testing ()
+ADD_SUBDIRECTORY(Tests/PQTest)
+ADD_SUBDIRECTORY(Tests/SSTest)

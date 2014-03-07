@@ -20,12 +20,12 @@
   3. This notice may not be removed or altered from any source distribution.
  **/
 
-#include "../../Include/MPPriorityQueue.h"
+#include "../../Include/MPSortedSet.h"
 #include <stdlib.h>
 #include <CUnit/Basic.h>
 
 
-static mpPriorityQueue* pq;
+static mpSortedSet* ss;
 
 static int mpCompareInt( void* a, void* b) {
     return *(int*)a - *(int*)b <= 0;
@@ -35,38 +35,28 @@ static int mpCompareInt( void* a, void* b) {
 static int* values = NULL;
 static int size = 30000;
 
-void mpAllocatePQTest() {
-    pq = mpAllocatePQ( size, mpCompareInt ); 
-    CU_ASSERT( pq != NULL );
+void mpAllocateSSTest() {
+    ss = mpAllocateSS( mpCompareInt ); 
+    CU_ASSERT( ss != NULL );
 }
 
-void mpPushPQTest() {
-    int i = 0;
-    for( i = 0; i < size; ++i ) {
-        mpPushPQ( pq, &values[i] ); 
-        CU_ASSERT( pq->m_Size == i+1 );
-        CU_ASSERT( *(int*)mpPeekPQ(pq) == 0 );
+void mpInsertSSTest() {
+    int i =0;
+    for(;i < size; ++i) {
+        mpInsertSS(ss, &values[i]); 
     }
 }
 
-void mpPeekPQTest() {
-    int value = *(int*)mpPeekPQ( pq ); 
-    CU_ASSERT( pq->m_Size == size );
-    CU_ASSERT( value == 0 );
-}
 
-void mpPopPQTest() {
-    int i = 0;
-    for( i = 0; i < size; ++i ) {
-        int value = *(int*)mpPopPQ( pq ); 
-        CU_ASSERT(pq->m_Size == (size - (i+1)));
-//        printf("%d %d\n",value,values[i]);
-        CU_ASSERT(value == values[i]);
+void mpRemoveSSTest() {
+    int i =0;
+    for(;i < size; ++i) {
+        mpRemoveSS(ss, &values[i]); 
     }
 }
 
-void mpFreePQTest() {
-    mpFreePQ( pq ); 
+void mpFreeSSTest() {
+    mpFreeSS( ss ); 
     CU_ASSERT( 1 );
 }
 
@@ -78,7 +68,7 @@ int main( int argc, char** argv ) {
     for(;i<size;++i) values[i]= i;
 
     CU_pSuite pSuite = NULL;
-    pq = NULL;
+    ss = NULL;
 
     /* initialize the CUnit test registry */ 
     if (CUE_SUCCESS != CU_initialize_registry()){
@@ -87,21 +77,21 @@ int main( int argc, char** argv ) {
     }
 
     /* add a suite to the registry */ 
-    pSuite = CU_add_suite("PQTest", NULL, NULL);
+    pSuite = CU_add_suite("SSTest", NULL, NULL);
     if (NULL == pSuite) goto error;
 
     /* add the tests to the suite */ 
-    if (NULL == CU_add_test(pSuite, "MPPriorityQueue.h: mpAllocatePQ()", mpAllocatePQTest )) 
+    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpAllocateSS()", mpAllocateSSTest )) 
         goto error;
 
 
-    if (NULL == CU_add_test(pSuite, "MPPriorityQueue.h: mpPushPQ()", mpPushPQTest ))
+    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpPushSS()", mpInsertSSTest ))
         goto error;
 
-    if (NULL == CU_add_test(pSuite, "MPPriorityQueue.h: mpPopPQ()", mpPopPQTest ))
+    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpPopSS()", mpRemoveSSTest ))
         goto error;
 
-    if (NULL == CU_add_test(pSuite, "MPPriorityQueue.h: mpFreePQ()", mpFreePQTest ))
+    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpFreeSS()", mpFreeSSTest ))
         goto error;
 
     /* Run all tests using the CUnit Basic interface */ 
@@ -114,7 +104,6 @@ error:
     free(values);
     CU_cleanup_registry();
     return CU_get_error();
-
 }
 
 
