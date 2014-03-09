@@ -23,20 +23,21 @@ Copyright notice:
 #ifndef MPSORTEDSET_H
 #define MPSORTEDSET_H
 
+  typedef struct _mpSortedSetNode mpSortedSetNode;
+
   /// @brief Represents a node in the binary tree used to implement the sorted set.
-  struct mpSortedSetNode{
+  typedef struct _mpSortedSetNode{
     mpSortedSetNode*   m_Left;     ///< @brief A pointer to the left children of the binary tree.
     mpSortedSetNode*   m_Right;    ///< @brief A pointer to the left node of the binary tree.
     mpSortedSetNode*   m_Parent;   ///< @brief A pointer to the parent.
     void*              m_Data;     ///< @brief A pointer to the data.
-
-  };
+  } mpSortedSetNode;
 
   /// @brief Represents a sorted set of elements.
-  struct mpSortedSet {
+  typedef struct _mpSortedSet {
     mpSortedSetNode*   m_Root;                          ///< @brief A pointer to the root node.
     int                 (*m_Comparator)( void*, void*); ///< @brief The comparator function.
-  };
+  } mpSortedSet;
 
 
   /// @brief    Allocates a sorted set.

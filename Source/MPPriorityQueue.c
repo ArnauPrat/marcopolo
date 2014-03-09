@@ -29,9 +29,11 @@ mpPriorityQueue* mpAllocatePQ( unsigned short capacity, int (*comparator)( void*
     assert( comparator != NULL ); 
     assert( capacity > 0 );
     mpPriorityQueue* pq = (mpPriorityQueue*)malloc(sizeof(mpPriorityQueue));
+    assert( pq != NULL );
     pq->m_Capacity = capacity; 
     pq->m_Size = 0;
     pq->m_Data = (void**)malloc(sizeof(void*)*pq->m_Capacity);
+    assert( pq->m_Data != NULL );
     pq->m_Comparator = comparator;
     return pq;
 }
@@ -46,27 +48,26 @@ void* mpPopPQ( mpPriorityQueue* pq ) {
     assert( pq != NULL );
     if( pq->m_Size == 0 ) return NULL;
     void* ret = pq->m_Data[0];
-    pq->m_Size -= 1;                        // reduce the size of the queue.    
-    pq->m_Data[0] = pq->m_Data[pq->m_Size];     // put the last element into the first position.
-    if( pq->m_Size > 0 ) {                  // if the size is greater than 0, then recompute the position of the first element.
+    pq->m_Size -= 1;                         // reduce the size of the queue.    
+    pq->m_Data[0] = pq->m_Data[pq->m_Size];  // put the last element into the first position.
+    if( pq->m_Size > 0 ) {                   // if the size is greater than 0, then recompute the position of the first element.
         unsigned short inPlace = 0;
         unsigned short pos = 0;
         while( !inPlace ) {
             inPlace = 1;
-            if( 2*pos+1 < pq->m_Size && !pq->m_Comparator( pq->m_Data[pos], pq->m_Data[2*pos+1]) ) {
-                int newPos = 2*pos + 1;
-                void* tmp = pq->m_Data[pos];
-                pq->m_Data[pos] = pq->m_Data[newPos];
-                pq->m_Data[newPos] = tmp;
-                pos = newPos;
-                inPlace = 0;
-            } else if( 2*pos+2 < pq->m_Size && !pq->m_Comparator( pq->m_Data[pos], pq->m_Data[2*pos+2]) ) {
-                int newPos = 2*pos + 2;
-                void* tmp = pq->m_Data[pos];
-                pq->m_Data[pos] = pq->m_Data[newPos];
-                pq->m_Data[newPos] = tmp;
-                pos = newPos;
-                inPlace = 0;
+            int newPos = 2*pos+1;
+            if( newPos < pq->m_Size ) {
+                int rightChild = newPos+1;
+                if( rightChild < pq->m_Size && !pq->m_Comparator( pq->m_Data[newPos], pq->m_Data[rightChild])) {
+                    newPos=rightChild;
+                }
+                if( !pq->m_Comparator( pq->m_Data[pos], pq->m_Data[newPos]) ) {
+                    void* tmp = pq->m_Data[pos];
+                    pq->m_Data[pos] = pq->m_Data[newPos];
+                    pq->m_Data[newPos] = tmp;
+                    pos = newPos;
+                    inPlace = 0;
+                }
             }
         }
     }
