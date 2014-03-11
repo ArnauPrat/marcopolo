@@ -33,7 +33,7 @@ static int mpCompareInt( void* a, void* b) {
 
 //static int values[10] = {1,2,3,4,5,6,7,8,9,10};
 static int* values = NULL;
-static int size = 30000;
+static int size = 100;
 
 void mpAllocateSSTest() {
     ss = mpAllocateSS( mpCompareInt ); 
@@ -43,10 +43,37 @@ void mpAllocateSSTest() {
 void mpInsertSSTest() {
     int i =0;
     for(;i < size; ++i) {
-        mpInsertSS(ss, &values[i]); 
+        mpInsertSS(ss, (void*)&values[i]); 
     }
 }
 
+void mpMinSSTest() {
+ CU_ASSERT(*(int*)mpMinSS(ss) == 0 );
+}
+
+void mpMaxSSTest() {
+    CU_ASSERT(*(int*)mpMaxSS(ss) == size-1 );
+}
+
+void mpNextSSTest() {
+    int* next = (int*)mpMinSS(ss);
+    int i = 0;
+    while( next != NULL ) {
+        CU_ASSERT(*next == i);
+        next = (int*)mpNextSS(ss,next);
+        ++i;
+    }
+}
+
+void mpPreviousSSTest() {
+    int* previous = (int*)mpMaxSS(ss);
+    int i = size-1;
+    while( previous != NULL ) {
+        CU_ASSERT(*previous == i);
+        previous = (int*)mpPreviousSS(ss,previous);
+        --i;
+    }
+}
 
 void mpRemoveSSTest() {
     int i =0;
@@ -84,11 +111,22 @@ int main( int argc, char** argv ) {
     if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpAllocateSS()", mpAllocateSSTest )) 
         goto error;
 
-
-    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpPushSS()", mpInsertSSTest ))
+    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpInsertSS()", mpInsertSSTest ))
         goto error;
 
-    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpPopSS()", mpRemoveSSTest ))
+    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpMinSS()", mpMinSSTest ))
+        goto error;
+
+    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpMaxSS()", mpMaxSSTest ))
+        goto error;
+
+    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpNextSS()", mpNextSSTest ))
+        goto error;
+
+    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpNextSS()", mpPreviousSSTest ))
+        goto error;
+
+    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpRemoveSS()", mpRemoveSSTest ))
         goto error;
 
     if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpFreeSS()", mpFreeSSTest ))

@@ -23,18 +23,19 @@ Copyright notice:
 
 #include "MPPolyOpts.h"
 #include "MPPriorityQueue.h"
+#include "MPSortedSet.h"
 #include <assert.h>
 
   /// @brief  This struct represents a sweep event in the Plane Sweep based algorithm
   ///         for boolean operations. The algorithm is based no that proposed in:
   ///         "A new algorithm for computing Boolean operations on polygons" by
   ///         Francisco Martínez, Antonio Jesús Rueda and Francisco Ramón Feito.
-  struct mpSweepEvent {
+  typedef struct _mpSweepEvent {
     unsigned short  m_Point;
     mpSweepEvent*   m_Other;
     int             m_Left;
     mpPolygon*      m_Polygon;
-  };
+  } mpSweepEvent;
 
   static int CompareSweepEvents( void* a, void* b ) {
       const mpSweepEvent* eventA = (mpSweepEvent*)a;
@@ -50,47 +51,68 @@ Copyright notice:
       return 1;
   }
 
+  static int CompareSweepEventsByY( void* a, void* b ) {
+      const mpSweepEvent* eventA = (mpSweepEvent*)a;
+      const mpSweepEvent* eventB = (mpSweepEvent*)b;
+      if(eventA->m_Polygon->m_Vertices[eventA->m_Point].m_Y < 
+         eventB->m_Polygon->m_Vertices[eventB->m_Point].m_Y) return 1;
+      if(eventA->m_Polygon->m_Vertices[eventA->m_Point].m_Y > 
+         eventB->m_Polygon->m_Vertices[eventB->m_Point].m_Y) return 0;
+      return 1;
+  }
+
+    static void ExtractAndPushEvents( mpPriorityQueue* pq, const mpPolygon* poly ) {
+        for( int i = 0; i < poly->m_NumVertices; ++i ) {
+            mpSweepEvent* eventL = (mpSweepEvent*)malloc(sizeof(mpSweepEvent));
+            mpSweepEvent* eventR = (mpSweepEvent*)malloc(sizeof(mpSweepEvent));
+            int lIndex = i;
+            int rIndex = (i+1)%poly->m_NumVertices;
+            if( poly->m_Vertices[lIndex].m_X > poly->m_Vertices[rIndex].m_X ||  
+                    (poly->m_Vertices[lIndex].m_X == poly->m_Vertices[rIndex].m_X &&  
+                     poly->m_Vertices[lIndex].m_Y > poly->m_Vertices[lIndex].m_Y) ) {
+                lIndex = rIndex;
+                rIndex = i;
+            }
+            eventL->m_Points = poly->m_Vertices[lIndex];
+            eventL->m_Other = eventR;
+            eventL->m_Left = 1;
+            eventL->m_Polygon = poly;
+            eventR->m_Points = poly->m_Vertices[rIndex];
+            eventR->m_Other = eventL;
+            eventL->m_Left = 0;
+            eventL->m_Polygon = poly;
+            mpPushPQ(pq,eventL);
+            mpPushPQ(pq,eventR);
+        }
+    }
+
   mpPolygon* mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB ) {
     assert(false);
     unsigned short numEventsA = polygonA->m_NumVertices*2;
     unsigned short numEventsB = polygonB->m_NumVertices*2;
-    mpPriorityQueue* pq = mpAllocatePQ( numEventsA + numEventsB, CompareSweepEvents A);
-    mpSweepEvent*  sweepEvents = (mpSweepEvent*)malloc(sizeof(mpSweepEvent)*(numEventsA+numEventsB));
-    unsigned short i;
-    for( i=0; i < numEventsA + numEventsB; i+=2 ) { 
-      unsigned short idx1; = i;
-      unsigned short idx2; = i+1;
-      unsigned short polyIndex;
-      mpPolygon* polygon;
-      if( i < numEventsA ){
-        polygon = polygonA;
-        polyIndex = i;
-      } else {
-        polygon = polygonB;
-        polyIndex = i - numEventsA;
-      }
-      sweepEvents[idx1].m_Point = polyIndex; 
-      sweepEvents[idx2].m_Point = (polyIndex+1) % polygon->m_NumVertices; 
-      sweepEvents[idx1].m_Other = &sweepEvents[idx2];
-      sweepEvents[idx2].m_Other = &sweepEvents[idx1];
-      sweepEvents[idx1].m_Polygon = polygon;
-      sweepEvents[idx2].m_Polygon = polygon;
-      if( sweepEvents[idx1].m_Point.m_X < sweepEvents[idx2].m_Point.m_X ) {
-        sweepEvents[idx1].m_Left  = 1;
-        sweepEvents[idx2].m_Left  = 0;
-      } else {
-        sweepEvents[idx2].m_Left  = 1;
-        sweepEvents[idx1].m_Left  = 0;
-      }
-      mpInsertPQ(pq, &sweepEvents[idx1]);
-      mpInsertPQ(pq, &sweepEvents[idx2]);
+    mpPriorityQueue* pq = mpAllocatePQ( (numEventsA + numEventsB) * 2, CompareSweepEvents );
+    // We first extract the events from the polygons.
+    ExtractAndPushEvents(pq,polygonA);
+    ExtractAndPushEvents(pq,polygonB);
+
+    MPSortedSet* ss = mpAllocateSS(CompareSweepEventsByY);
+    mpSweepEvent* currentEvent = NULL;
+    while( (currentEvent = mpPopPQ(pq)) != NULL ) {
+        if(currentEvent->m_Left) {
+            mpInsertSS(ss,currentEvent);
+            mpSweepEvent* previous = mpPreviousSS(ss,currentEvent);
+            mpSweepEvent* next = mpNextSS(ss,currentEvent);
+            // Check for intersection with previous
+            // Check for intersection with next 
+        } else { // The event is a right endpoint.
+            mpSweepEvent* leftEndpoint = currentEvent->m_Other;
+            mpSweepEvent* previous = mpPreviousSS(ss,leftEndpoint);
+            mpSweepEvent* next = mpNextSS(ss,leftEndpoint);
+            // Check for intersection between previous and next 
+            mpRemoveSS(leftEndpoint);
+        }
     }
-
-    while(mpPeekPQ(pq)){
-
-    }
-
-    free(sweepEvents); 
+    mpFreeSS(ss);
     mpFreePQ(pq);
     return NULL;
   }

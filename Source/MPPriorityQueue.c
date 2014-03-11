@@ -22,6 +22,7 @@ Copyright notice:
 
 #include "MPPriorityQueue.h"
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 
@@ -81,7 +82,14 @@ void* mpPeekPQ( mpPriorityQueue* pq ) {
 
 void mpPushPQ( mpPriorityQueue* pq, void* element ) {
     assert( pq != NULL );
-    assert( pq->m_Size < pq->m_Capacity );
+    if( pq->m_Size == pq->m_Capacity ) {
+        int newCapacity = pq->m_Capacity*2;
+        void** temp = (void**)malloc(sizeof(void*)*newCapacity);
+        memcpy(temp, pq->m_Data, sizeof(void*)*pq->m_Capacity);
+        free(pq->m_Data);
+        pq->m_Data = temp;
+        pq->m_Capacity = newCapacity;
+    }
     unsigned short pos = pq->m_Size;
     pq->m_Data[pos] = element;
     pq->m_Size += 1;

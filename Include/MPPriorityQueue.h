@@ -32,7 +32,7 @@ typedef struct _mpPriorityQueue {
 } mpPriorityQueue;
 
 /// @brief Allocates a priority queue.
-/// @param[in] capacity The maximum capacity of the priority queue.
+/// @param[in] capacity The initial capacity of the priority queue.
 /// @param[in] comparator The comparator function used to set the priority between elements.
 mpPriorityQueue* mpAllocatePQ( unsigned short capacity, int (*comparator)( void*, void* ) ); 
 

@@ -31,12 +31,12 @@ static int mpCompareInt( void* a, void* b) {
     return *(int*)a - *(int*)b <= 0;
 }
 
-//static int values[10] = {1,2,3,4,5,6,7,8,9,10};
 static int* values = NULL;
 static int size = 30000;
+static int capacity = 10;
 
 void mpAllocatePQTest() {
-    pq = mpAllocatePQ( size, mpCompareInt ); 
+    pq = mpAllocatePQ( capacity, mpCompareInt ); 
     CU_ASSERT( pq != NULL );
 }
 
