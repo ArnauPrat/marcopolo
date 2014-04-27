@@ -29,8 +29,9 @@ Copyright notice:
 /// @brief Computes the union of two polygons.
 /// @param[in] polygonA The first polygon of the union.
 /// @param[in] polygonB The second polygon of the union.
-/// @return A new polygon containing the union
-mpPolygon* mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB );
+/// @param[out] polygonOut A polygon containing the union.
+/// @return 1 if the two polygons were intersecting. 
+int mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPolygon* polygonOut );
 
 /// @brief Computes the union of a set of polygons.
 /// @param[in] polygons The array of polygons to compute the union.

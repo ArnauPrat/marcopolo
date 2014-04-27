@@ -25,7 +25,7 @@ Copyright notice:
   #include <assert.h>
 
 
-  mpAABB  ExtractBoundingBox( const mpPolygon* polygon ) {
+  mpAABB  mpExtractAABB( const mpPolygon* polygon ) {
     assert(polygon != NULL);
     assert(polygon->m_NumVertices > 0);
     assert(polygon->m_Vertices != NULL);

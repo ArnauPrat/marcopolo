@@ -63,4 +63,10 @@ mpPolygon* mpAllocatePolygon();
 /// @param polygon The polygon to free.
 void mpFreePolygon( mpPolygon* polygon );
 
+/// @brief Compares to points.
+/// @param[in] point1 The first point to compare.
+/// @param[in] point2 The second point to compare.
+/// @return 1 if the two points are the same. 0 otherwise.
+int mpComparePoints(const mpPoint* point1, const mpPoint* point2);
+
 #endif 

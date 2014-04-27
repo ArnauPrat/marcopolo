@@ -28,7 +28,7 @@ Copyright notice:
 /// @brief Extracs the bounding box of a polygon.
 /// @param[in] The polygon.
 /// @return The AABB bounding box of the polygon.
-mpAABB  ExtractBoundingBox( const mpPolygon* polygon );
+mpAABB  mpExtractAABB( const mpPolygon* polygon );
 
 #endif
 

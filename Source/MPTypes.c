@@ -38,3 +38,8 @@ void mpFreePolygon( mpPolygon* polygon ) {
     if( polygon->m_Vertices != NULL ) free( polygon->m_Vertices );
     return free(polygon);
 }
+
+int mpComparePoints(const mpPoint* point1, const mpPoint* point2) {
+    assert(0);
+    return 0;
+}
