@@ -21,6 +21,7 @@ Copyright notice:
 **/
 
 #include "MPPrimitiveTests.h"
+#include "MPUtils.h"
 #include <assert.h>
 
 static int min(float a, float b) {
@@ -28,7 +29,7 @@ static int min(float a, float b) {
     return a < 1.0 ? a : b;
 }
 
-static int min(float a, floatb) {
+static int max(float a, float b) {
     float res = a - b; 
     return a < 1.0 ? b : a;
 }
@@ -36,10 +37,10 @@ static int min(float a, floatb) {
 
 
 int    mpTestAABBvsAABB( const mpAABB* a, const mpAABB* b ) {
-    if( (a->m_Center.m_X + a->m_ExtX) < (b.m_Center.m_X - b.m_ExtX) ||
-            (b.m_Center.m_X + b.m_ExtX) < (a->m_Center.m_X - a->m_ExtX) ) return 0;
-    if( (a->m_Center.m_Y + a->m_ExtY) < (b.m_Center.m_Y - b.m_ExtY) ||
-            (b.m_Center.m_Y + b.m_ExtY) < (a->m_Center.m_Y - a->m_ExtY) ) return 0;
+    if( (a->m_Center.m_X + a->m_ExtX) < (b->m_Center.m_X - b->m_ExtX) ||
+            (b->m_Center.m_X + b->m_ExtX) < (a->m_Center.m_X - a->m_ExtX) ) return 0;
+    if( (a->m_Center.m_Y + a->m_ExtY) < (b->m_Center.m_Y - b->m_ExtY) ||
+            (b->m_Center.m_Y + b->m_ExtY) < (a->m_Center.m_Y - a->m_ExtY) ) return 0;
     return 1;
 }
 
@@ -66,15 +67,14 @@ int    mpTestPointvsPoly(const mpPoint* point, const mpPolygon* poly) {
     unsigned short i; 
     unsigned short count = 0;
     mpAABB bb = mpExtractAABB(poly);
-    mpPoint other = {bb.m_Center+bb.m_ExtX,point.m_Y};
+    mpPoint other = {point->m_X+bb.m_ExtX*2,point->m_Y};
     for( i = 0; i < poly->m_NumVertices;++i) {
         mpPoint intersection;
         mpTestSegvsSeg(point,&other,&poly->m_Vertices[i],&poly->m_Vertices[(i+1)%poly->m_NumVertices],&intersection);
-        if(mpComparePoints(intersection,&poly->m_Vertices[i]) ) {
+        if(mpComparePoints(&intersection,&poly->m_Vertices[i]) ) {
             mpPoint aux = {poly->m_Vertices[i].m_X, poly->m_Vertices[i].m_Y+0.00000001};
             if(mpTestSegvsSeg(point,&other,&aux,&poly->m_Vertices[(i+1)%poly->m_NumVertices],&intersection)) count++;
-
-        } else if(mpComparePoints(intersection,&poly->m_Vertices[(i+1)%poly->m_NumVertices])) {
+        } else if(mpComparePoints(&intersection,&poly->m_Vertices[(i+1)%poly->m_NumVertices])) {
             mpPoint aux = {poly->m_Vertices[(i+1)%poly->m_NumVertices].m_X, poly->m_Vertices[(i+1)%poly->m_NumVertices].m_Y+0.00000001};
             if(mpTestSegvsSeg(point,&other,&poly->m_Vertices[i],&aux,&intersection)) count++;
         } else {

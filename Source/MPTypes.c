@@ -24,11 +24,12 @@ Copyright notice:
 #include "MPTypes.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 
 mpPolygon* mpAllocatePolygon() {
-    mpPolygon* polyon = (mpPolygon*)malloc(sizeof(mpPolygon));
+    mpPolygon* polygon = (mpPolygon*)malloc(sizeof(mpPolygon));
     memset(polygon,0,sizeof(mpPolygon));
     return polygon;
 }

@@ -37,7 +37,7 @@ int mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPoly
 /// @param[in] polygons The array of polygons to compute the union.
 /// @param[in] numPolygons The number of polygons in the array.
 /// @return A new polygon containing the union.
-mpPolygon* mpPolygonUnion( const mpPolygon* polygons, const unsigned int numPolygons);
+//mpPolygon* mpPolygonUnion( const mpPolygon* polygons, const unsigned int numPolygons);
 
 #endif
 

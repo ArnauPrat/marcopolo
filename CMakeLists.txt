@@ -4,6 +4,10 @@ PROJECT(marcopolo C)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 
+INCLUDE_DIRECTORIES(./Include)
+FILE( GLOB_RECURSE SOURCE_FILES "Source/*" )
+ADD_LIBRARY(marcopolo ${SOURCE_FILES})  
+
 enable_testing ()
 ADD_SUBDIRECTORY(Tests/PQTest)
 ADD_SUBDIRECTORY(Tests/SSTest)

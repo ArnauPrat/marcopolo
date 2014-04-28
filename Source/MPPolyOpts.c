@@ -27,6 +27,8 @@
 #include "MPPrimitiveTests.h"
 #include <assert.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 
 /// @brief  This struct represents a chain of points. It is used to construct
@@ -46,7 +48,7 @@ static mpPointChain*  mpAllocatePointChain(const mpPoint* point1, const mpPoint*
     mpPointChain* chain = (mpPointChain*)malloc(sizeof(mpPointChain));
     assert(chain);
     chain->m_Capacity = 4;
-    chain->m_Points = (m_Points*)malloc(sizeof(mpPoint)*chain->m_Capacity);
+    chain->m_Points = (mpPoint*)malloc(sizeof(mpPoint)*chain->m_Capacity);
     chain->m_Size = 2;
     chain->m_Begin = 0; 
     chain->m_Points[0] = *point1; 
@@ -128,6 +130,10 @@ static int mpAddSegment(mpPointChain* chain, const mpPoint* point1, const mpPoin
     return 0;
 }
 
+
+
+typedef struct _mpSweepEvent mpSweepEvent;
+
 /// @brief  This struct represents a sweep event in the Plane Sweep based algorithm
 ///         for boolean operations. The algorithm is based no that proposed in:
 ///         "A new algorithm for computing Boolean operations on polygons" by
@@ -138,6 +144,18 @@ typedef struct _mpSweepEvent {
     int             m_Left;         ///< @brief 1 if this event represents the left point of a segment.
     mpPolygon*      m_Polygon;      ///< @brief A pointer to the polygon this point belongs to.
 } mpSweepEvent;
+
+/// @brief Compares two sweep events by their Y coordinate.
+/// @param[in] a The first sweepevent.
+/// @param[in] b The second sweepevent.
+/// @return 1 if a goes before b. 0 Otherwise. 
+static int CompareSweepEventsByY( void* a, void* b ) {
+    const mpSweepEvent* eventA = (mpSweepEvent*)a;
+    const mpSweepEvent* eventB = (mpSweepEvent*)b;
+    if(eventA->m_Point.m_Y < eventB->m_Point.m_Y) return 1;
+    if(eventA->m_Point.m_Y > eventB->m_Point.m_Y) return 0;
+    return 1;
+}
 
 /// @brief Compares two sweep events, first by the X coordinate of its point
 ///        and then by its Y coordinate.
@@ -152,25 +170,13 @@ static int CompareSweepEvents( void* a, void* b ) {
     return CompareSweepEventsByY(a,b);
 }
 
-/// @brief Compares two sweep events by their Y coordinate.
-/// @param[in] a The first sweepevent.
-/// @param[in] b The second sweepevent.
-/// @return 1 if a goes before b. 0 Otherwise. 
-static int CompareSweepEventsByY( void* a, void* b ) {
-    const mpSweepEvent* eventA = (mpSweepEvent*)a;
-    const mpSweepEvent* eventB = (mpSweepEvent*)b;
-    if(eventA->m_Point.m_Y < eventB->m_Point.m_Y) return 1;
-    if(eventA->m_Point.m_Y > eventB->m_Point.m_Y) return 0;
-    return 1;
-}
-
-
 /// @brief Extracts the sweepevents from a polygon and adds them into a
 ///        priority queue.
 /// @param[in] pq The priority queue to add the events to.
 /// @param[in] poly The polygon to extract the events from.
 static void ExtractAndPushEvents( mpPriorityQueue* pq, const mpPolygon* poly ) {
-    for( int i = 0; i < poly->m_NumVertices; ++i ) {
+    int i;
+    for( i = 0; i < poly->m_NumVertices; ++i ) {
         mpSweepEvent* eventL = (mpSweepEvent*)malloc(sizeof(mpSweepEvent));
         mpSweepEvent* eventR = (mpSweepEvent*)malloc(sizeof(mpSweepEvent));
         int lIndex = i;
@@ -184,11 +190,11 @@ static void ExtractAndPushEvents( mpPriorityQueue* pq, const mpPolygon* poly ) {
         eventL->m_Point = poly->m_Vertices[lIndex];
         eventL->m_Other = eventR;
         eventL->m_Left = 1;
-        eventL->m_Polygon = poly;
+        eventL->m_Polygon = (mpPolygon*)poly;
         eventR->m_Point = poly->m_Vertices[rIndex];
         eventR->m_Other = eventL;
-        eventL->m_Left = 0;
-        eventL->m_Polygon = poly;
+        eventR->m_Left = 0;
+        eventR->m_Polygon = (mpPolygon*)poly;
         mpPushPQ(pq,eventL);
         mpPushPQ(pq,eventR);
     }
@@ -201,7 +207,7 @@ static void ExtractAndPushEvents( mpPriorityQueue* pq, const mpPolygon* poly ) {
 /// @param[in] a2 The sweepevent representing the right point of the first segment. 
 /// @param[in] b1 The sweepevent representing the right point of the second segment. 
 /// @param[in] b2 The sweepevent representing the right point of the second segment. 
-static void mpTestIntersection(mpPriorityQueue* pq, const mpSweepEvent* a1, const mpSweepEvent* a2, const mpSweepEvent* b1, const mpSweepEvent* b2) {
+static void mpTestIntersection(mpPriorityQueue* pq, mpSweepEvent* a1, mpSweepEvent* a2, mpSweepEvent* b1, mpSweepEvent* b2) {
 
     mpPoint intersectionPoint;
     if(!mpTestSegvsSeg(&a1->m_Point,&a2->m_Point,&b1->m_Point,&b2->m_Point,&intersectionPoint)) return;
@@ -243,7 +249,7 @@ static void mpTestIntersection(mpPriorityQueue* pq, const mpSweepEvent* a1, cons
     mpPushPQ(pq,interEvent);
 }
 
-int* mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPolygon* polygonOut ) {
+int mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPolygon* polygonOut ) {
     unsigned short numEventsA = polygonA->m_NumVertices*2;
     unsigned short numEventsB = polygonB->m_NumVertices*2;
     mpPriorityQueue* pq = mpAllocatePQ( (numEventsA + numEventsB) * 2, CompareSweepEvents );
@@ -263,28 +269,28 @@ int* mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPol
             mpSweepEvent* previous = mpPreviousSS(ss,currentEvent);
             mpSweepEvent* next = mpNextSS(ss,currentEvent);
             // Check for intersection with previous
-            mpTestIntersection(pq,&previous, &previous->m_Other,
-                            &currentEvent, currentEvent->m_Other);
+            mpTestIntersection(pq,previous, previous->m_Other,
+                            currentEvent, currentEvent->m_Other);
 
             // Check for intersection with next 
-            mpTestIntersection(pq,&next->m_Point, &next->m_Other->m_Point,
-                            &currentEvent->m_Point, currentEvent->m_Other->m_Point);
+            mpTestIntersection(pq, next, next->m_Other,
+                            currentEvent, currentEvent->m_Other);
 
         } else { // The event is a right endpoint.
             mpSweepEvent* leftEndpoint = currentEvent->m_Other;
             mpSweepEvent* previous = mpPreviousSS(ss,leftEndpoint);
             mpSweepEvent* next = mpNextSS(ss,leftEndpoint);
             // Check for intersection between previous and next 
-            mpTestIntersection(pq,&previous->m_Point, &previous->m_Other->m_Point,
-                            &next->m_Point, next->m_Other->m_Point);
-            mpRemoveSS(leftEndpoint);
+            mpTestIntersection(pq,previous, previous->m_Other,
+                            next, next->m_Other);
+            mpRemoveSS(ss,leftEndpoint);
             // Test if leftEndpoint <-> currentEvent segment is inside the other polygon.
-            mpPolygon* poly = leftEndpoint->m_Polygon == polygonA ? polygonB : polygonA;
+            mpPolygon* poly = leftEndpoint->m_Polygon == polygonA ? (mpPolygon*)polygonB : (mpPolygon*)polygonA;
             if(!mpTestPointvsPoly(&leftEndpoint->m_Point, poly) || !mpTestPointvsPoly(&currentEvent->m_Point, poly)) {
                 int i;
                 int found = 0;
                 for( i = 0; i < chainsSize; ++i) {
-                    if(mpAddSegment(chains[i],leftEndpoint->m_Point, currentEvent->m_Point)) {
+                    if(mpAddSegment(chains[i],&leftEndpoint->m_Point, &currentEvent->m_Point)) {
                         found=1;
                         break;
                     } 
@@ -292,12 +298,12 @@ int* mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPol
                 if(!found) {
                     if(chainsCapacity==chainsSize) {
                         mpPointChain** newChains = (mpPointChain**)malloc(sizeof(mpPointChain)*chainsCapacity*2);
-                        memcpy(newChains,chains,sizeof(mpPointChain*)chainsCapacity);
+                        memcpy(newChains,chains,sizeof(mpPointChain*)*chainsCapacity);
                         free(chains);
                         chains = newChains;
                         chainsCapacity*=2;
                     }
-                    chains[chainsSize]=mpAllocatePointChain(leftEndpoint->m_Point, currentEvent->m_Point);
+                    chains[chainsSize]=mpAllocatePointChain(&leftEndpoint->m_Point, &currentEvent->m_Point);
                 }
             }
             // Free leftEndpoint and currentEvent
@@ -322,12 +328,12 @@ int* mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPol
     free(chains);
     mpFreeSS(ss);
     mpFreePQ(pq);
-    return NULL;
+    return 0;
 }
 
 
-mpPolygon* mpPolygonUnion( const mpPolygon* polygons, const unsigned int numPolygons) {
+/*mpPolygon* mpPolygonUnion( const mpPolygon* polygons, const unsigned int numPolygons) {
     assert(false);
     return NULL;
-}
+}*/
 

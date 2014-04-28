@@ -21,7 +21,7 @@ Copyright notice:
 **/
 
   #include "MPUtils.h"
-  #include <stdlio.h>
+  #include <stdio.h>
   #include <assert.h>
 
 
@@ -35,7 +35,8 @@ Copyright notice:
     min.m_Y = polygon->m_Vertices[0].m_Y;
     max.m_X = polygon->m_Vertices[0].m_X;
     max.m_Y = polygon->m_Vertices[0].m_Y;
-    for ( unsigned int i = 1; i < polygon->m_NumVertices; ++i ) {
+    unsigned int i;
+    for ( i = 1; i < polygon->m_NumVertices; ++i ) {
       if( polygon->m_Vertices[i].m_X < min.m_X ) min.m_X = polygon->m_Vertices[i].m_X;
       if( polygon->m_Vertices[i].m_Y < min.m_Y ) min.m_Y = polygon->m_Vertices[i].m_Y;
       if( polygon->m_Vertices[i].m_X > max.m_X ) max.m_X = polygon->m_Vertices[i].m_X;

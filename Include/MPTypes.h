@@ -27,32 +27,31 @@ Copyright notice:
   #define MP_MAX_POLY_SIZE 0xffff 
 #endif
 
-struct mpVector;
-
-#typedef mpVector mpPoint
 
     /// @brief A two-dimensional vector.
-struct mpVector {
+typedef struct _mpVector {
   float m_X;  ///< @brief The x coordinate of the vector.
   float m_Y;  ///< @brief The y coordinate of the vector.
-};
+} mpVector;
+
+typedef mpVector mpPoint;
 
 /// @brief A polygon.
-struct mpPolygon {
+typedef struct _mpPolygon {
   mpPoint*        m_Vertices;       ///< @brief The array of vertices that form the polygon in clockwise order.
   unsigned short  m_NumVertices;    ///< @brief The number of vertices of the polygon.
-};
+} mpPolygon;
 
     /// @brief A navigation mesh.
-struct mpNavMesh {
-};
+typedef struct _mpNavMesh {
+} mpNavMesh;
 
     /// @brief An axis aligned bounding box.
-struct mpAABB {
+typedef struct _mpAABB {
   mpPoint   m_Center;   ///< @brief The center of the bounding box.
   float     m_ExtX;     ///< @brief The extension in the X axis.
   float     m_ExtY;     ///< @brief The extension in the Y axis.
-};
+} mpAABB;
 
 /// @brief Allocates a polygon.
 /// @return A pointer to the allocated polygon.
