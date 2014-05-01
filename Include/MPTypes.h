@@ -54,8 +54,10 @@ typedef struct _mpAABB {
 } mpAABB;
 
 /// @brief Allocates a polygon.
+/// @param vertices The array of points that form the vertices of the polygon.
+/// @param numVertices The number of vertices in the array.
 /// @return A pointer to the allocated polygon.
-mpPolygon* mpAllocatePolygon();
+mpPolygon* mpAllocatePolygon( const mpPoint* vertices, const unsigned short numVertices );
 
 
 /// @bief Frees a polygon.

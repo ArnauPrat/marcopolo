@@ -24,6 +24,6 @@ Copyright notice:
 #define MARCOPOLO_H
 
 #include "MPTypes.h"
-#include "MPNavMesh.h"
+#include "MPPolyOpts.h"
 
 #endif

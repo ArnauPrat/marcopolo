@@ -28,19 +28,22 @@ Copyright notice:
 #include <assert.h>
 
 
-mpPolygon* mpAllocatePolygon() {
+mpPolygon* mpAllocatePolygon( const mpPoint* vertices, const unsigned short numVertices ) {
     mpPolygon* polygon = (mpPolygon*)malloc(sizeof(mpPolygon));
     memset(polygon,0,sizeof(mpPolygon));
+    polygon->m_Vertices = (mpPoint*)malloc(sizeof(mpPoint)*numVertices);
+    memcpy(polygon->m_Vertices,vertices,sizeof(mpPoint)*numVertices);
+    polygon->m_NumVertices = numVertices;
     return polygon;
 }
 
 void mpFreePolygon( mpPolygon* polygon ) {
     assert( polygon != NULL );
-    if( polygon->m_Vertices != NULL ) free( polygon->m_Vertices );
+    free(polygon->m_Vertices);
+    memset(polygon,0,sizeof(mpPolygon));
     return free(polygon);
 }
 
 int mpComparePoints(const mpPoint* point1, const mpPoint* point2) {
-    assert(0);
-    return 0;
+    return point1->m_X == point2->m_X && point1->m_Y == point2->m_Y;
 }
