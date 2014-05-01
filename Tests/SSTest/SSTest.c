@@ -28,7 +28,7 @@
 static mpSortedSet* ss;
 
 static int mpCompareInt( void* a, void* b) {
-    return *(int*)a - *(int*)b <= 0;
+    return  *(int*)a - *(int*)b < 0;
 }
 
 //static int values[10] = {1,2,3,4,5,6,7,8,9,10};

@@ -153,7 +153,7 @@ static int CompareSweepEventsByY( void* a, void* b ) {
     const mpSweepEvent* eventB = (mpSweepEvent*)b;
     if(eventA->m_Point.m_Y < eventB->m_Point.m_Y) return 1;
     if(eventA->m_Point.m_Y > eventB->m_Point.m_Y) return 0;
-    return 1;
+    return 0;
 }
 
 /// @brief Compares two sweep events, first by the X coordinate of its point
@@ -282,6 +282,7 @@ int mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPoly
                 printf("Next %p\n",next);
                 mpTestIntersection(pq, next, next->m_Other, currentEvent, currentEvent->m_Other);
             }
+            printf("End actions %p\n",currentEvent);
 
 
         } else { // The event is a right endpoint.
