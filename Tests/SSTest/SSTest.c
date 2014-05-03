@@ -28,7 +28,7 @@
 static mpSortedSet* ss;
 
 static int mpCompareInt( void* a, void* b) {
-    return  *(int*)a - *(int*)b < 0;
+    return  *(int*)a - *(int*)b;
 }
 
 //static int values[10] = {1,2,3,4,5,6,7,8,9,10};
@@ -135,12 +135,9 @@ int main( int argc, char** argv ) {
     /* Run all tests using the CUnit Basic interface */ 
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
-    CU_cleanup_registry();
-    return CU_get_error();
-
 error:
-    free(values);
     CU_cleanup_registry();
+    free(values);
     return CU_get_error();
 }
 

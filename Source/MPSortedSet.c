@@ -23,6 +23,7 @@ Copyright notice:
 #include "MPSortedSet.h"
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 
 mpSortedSet* mpAllocateSS( int (*comparator)( void*, void* ) ) {
@@ -50,31 +51,31 @@ static void _mpInsertSS( mpSortedSet* ss, mpSortedSetNode* root, void* element )
     assert( ss!=NULL );
     assert( root!=NULL );
     assert( element!=NULL );
-    if( ss->m_Comparator( root->m_Data, element ) == 0 ) {
-      if( root->m_Left != NULL ) { 
-        _mpInsertSS( ss, root->m_Left, element );
-      }
-      else {
+    if( ss->m_Comparator( root->m_Data, element ) > 0 ) {
+        if( root->m_Left != NULL ) { 
+            _mpInsertSS( ss, root->m_Left, element );
+        }
+        else {
+            mpSortedSetNode* node = (mpSortedSetNode*)malloc(sizeof(mpSortedSetNode));
+            node->m_Data = element;
+            node->m_Left = NULL;
+            node->m_Right = NULL;
+            node->m_Parent = NULL;
+            node->m_Parent = root;
+            root->m_Left = node;
+        }
+    } else if( root->m_Right != NULL ) { 
+        _mpInsertSS( ss, root->m_Right, element );
+    } else {
         mpSortedSetNode* node = (mpSortedSetNode*)malloc(sizeof(mpSortedSetNode));
         node->m_Data = element;
         node->m_Left = NULL;
         node->m_Right = NULL;
         node->m_Parent = NULL;
         node->m_Parent = root;
-        root->m_Left = node;
-      }
-    } else if( root->m_Right != NULL ) { 
-      _mpInsertSS( ss, root->m_Right, element );
-    } else {
-      mpSortedSetNode* node = (mpSortedSetNode*)malloc(sizeof(mpSortedSetNode));
-      node->m_Data = element;
-      node->m_Left = NULL;
-      node->m_Right = NULL;
-      node->m_Parent = NULL;
-      node->m_Parent = root;
-      root->m_Right = node;
+        root->m_Right = node;
     }
-  }
+}
 
 void mpInsertSS( mpSortedSet* ss, void* element) {
     assert( ss!=NULL );
@@ -93,7 +94,7 @@ void mpInsertSS( mpSortedSet* ss, void* element) {
 
 
 static mpSortedSetNode* _mpRemoveSS( mpSortedSet* ss, mpSortedSetNode* root, void* element ) {
-    if( ss->m_Comparator(root->m_Data, element ) == 0 && ss->m_Comparator( element, root->m_Data ) == 0) {
+    if( ss->m_Comparator(root->m_Data, element ) == 0 ) {
       if( root->m_Left != NULL ) {
         root->m_Data = root->m_Left->m_Data;
         root->m_Left = _mpRemoveSS( ss, root->m_Left, root->m_Left->m_Data );
@@ -104,9 +105,9 @@ static mpSortedSetNode* _mpRemoveSS( mpSortedSet* ss, mpSortedSetNode* root, voi
         free(root);
         return NULL;
       }
-    } else if( root->m_Left != NULL && ss->m_Comparator( root->m_Data, element )== 0 ) { 
+    } else if( root->m_Left != NULL && ss->m_Comparator( root->m_Data, element ) > 0 ) { 
             root->m_Left = _mpRemoveSS( ss, root->m_Left, element ); }
-      else if( root->m_Right != NULL &&  ss->m_Comparator( root->m_Data, element )== 1 ) { 
+      else if( root->m_Right != NULL &&  ss->m_Comparator( root->m_Data, element ) < 0 ) { 
             root->m_Right = _mpRemoveSS( ss, root->m_Right, element ); } 
     return root;
 }
@@ -144,26 +145,36 @@ static mpSortedSetNode* mpFindSS( mpSortedSet* ss, mpSortedSetNode* root, void* 
   assert(ss!=NULL);
   assert(root!=NULL);
   assert(element!=NULL);
-  int after = ss->m_Comparator( root->m_Data, element );
-  int before = ss->m_Comparator( element, root->m_Data ); 
-  if( after == 0 && before == 0 )  {
+  int comp = ss->m_Comparator( root->m_Data, element );
+  if( comp == 0 )  {
     return root; 
-  } else if( before == 1 && root->m_Left != NULL ) { return mpFindSS( ss, root->m_Left, element ); }
-    else if( after == 1 && root->m_Right != NULL ) { return mpFindSS( ss, root->m_Right, element ); }
+  } else if( comp > 0  && root->m_Left != NULL ) { return  mpFindSS( ss, root->m_Left, element ); }
+    else if( comp < 0 && root->m_Right != NULL ) { return mpFindSS( ss, root->m_Right, element ); }
   return NULL;
 }
 
 void* mpNextSS( mpSortedSet* ss, void* element ) {
-  mpSortedSetNode* node = mpFindSS(ss,ss->m_Root,element);
-  if( node->m_Right != NULL ) { return _mpMinSS( node->m_Right ); }
-  else if( node->m_Parent!=NULL && node->m_Parent->m_Right != node ) { return node->m_Parent->m_Data; }
+  mpSortedSetNode* node = mpFindSS( ss, ss->m_Root, element );
+  assert(node);
+  if( node->m_Right != NULL ) { 
+      void* res = _mpMinSS( node->m_Right ); 
+      return res != element ? res : NULL;
+  }  else if( node->m_Parent!=NULL && node->m_Parent->m_Right!=node ) { 
+      void* res = node->m_Parent->m_Data;
+      return res != element ? res : NULL;
+  }
   return NULL;
 }
 
 void* mpPreviousSS( mpSortedSet* ss, void* element ) {
-  mpSortedSetNode* node = mpFindSS(ss,ss->m_Root,element);
-  assert(node);
-  if( node->m_Left != NULL ) { return _mpMaxSS( node->m_Left ); }
-  else if( node->m_Parent!=NULL && node->m_Parent->m_Left != node) { return node->m_Parent->m_Data; }
+  mpSortedSetNode* node = mpFindSS( ss,ss->m_Root,element );
+  assert( node );
+  if( node->m_Left != NULL ) { 
+      void* res = _mpMaxSS( node->m_Left );
+      return res != element ? res : NULL;
+  } else if( node->m_Parent!=NULL && node->m_Parent->m_Left!=node) { 
+      void* res = node->m_Parent->m_Data;
+      return res != element ? res : NULL;
+  }
   return NULL;
 }

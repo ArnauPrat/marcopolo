@@ -151,8 +151,9 @@ typedef struct _mpSweepEvent {
 static int CompareSweepEventsByY( void* a, void* b ) {
     const mpSweepEvent* eventA = (mpSweepEvent*)a;
     const mpSweepEvent* eventB = (mpSweepEvent*)b;
-    if(eventA->m_Point.m_Y < eventB->m_Point.m_Y) return 1;
-    if(eventA->m_Point.m_Y > eventB->m_Point.m_Y) return 0;
+    float res = eventA->m_Point.m_Y - eventB->m_Point.m_Y; 
+    if( res < 0.0 ) return -1; 
+    if( res > 0.0 ) return 1; 
     return 0;
 }
 
@@ -164,8 +165,9 @@ static int CompareSweepEventsByY( void* a, void* b ) {
 static int CompareSweepEvents( void* a, void* b ) {
     const mpSweepEvent* eventA = (mpSweepEvent*)a;
     const mpSweepEvent* eventB = (mpSweepEvent*)b;
-    if(eventA->m_Point.m_X < eventB->m_Point.m_X) return 1;
-    if(eventA->m_Point.m_X > eventB->m_Point.m_X) return 0;
+    float res = eventA->m_Point.m_X - eventB->m_Point.m_X;
+    if( res < 0.0 ) return -1; 
+    if( res > 0.0 ) return 1; 
     return CompareSweepEventsByY(a,b);
 }
 
@@ -264,6 +266,7 @@ int mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPoly
     mpSortedSet* ss = mpAllocateSS(CompareSweepEventsByY);
     mpSweepEvent* currentEvent = NULL;
     while( (currentEvent = mpPopPQ(pq)) != NULL ) {
+        printf("START ITERATION\n");
         if(currentEvent->m_Left) {
             mpInsertSS(ss,currentEvent);
             mpSweepEvent* previous = mpPreviousSS(ss,currentEvent);
@@ -283,8 +286,6 @@ int mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPoly
                 mpTestIntersection(pq, next, next->m_Other, currentEvent, currentEvent->m_Other);
             }
             printf("End actions %p\n",currentEvent);
-
-
         } else { // The event is a right endpoint.
             mpSweepEvent* leftEndpoint = currentEvent->m_Other;
             mpSweepEvent* previous = mpPreviousSS(ss,leftEndpoint);

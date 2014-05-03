@@ -52,17 +52,17 @@ void* mpPopPQ( mpPriorityQueue* pq ) {
     pq->m_Size -= 1;                         // reduce the size of the queue.    
     pq->m_Data[0] = pq->m_Data[pq->m_Size];  // put the last element into the first position.
     if( pq->m_Size > 0 ) {                   // if the size is greater than 0, then recompute the position of the first element.
-        unsigned short inPlace = 0;
-        unsigned short pos = 0;
+        short inPlace = 0;
+        short pos = 0;
         while( !inPlace ) {
             inPlace = 1;
             int newPos = 2*pos+1;
             if( newPos < pq->m_Size ) {
                 int rightChild = newPos+1;
-                if( rightChild < pq->m_Size && !pq->m_Comparator( pq->m_Data[newPos], pq->m_Data[rightChild])) {
+                if( rightChild < pq->m_Size && pq->m_Comparator( pq->m_Data[rightChild], pq->m_Data[newPos]) < 0) {
                     newPos=rightChild;
                 }
-                if( !pq->m_Comparator( pq->m_Data[pos], pq->m_Data[newPos]) ) {
+                if( pq->m_Comparator( pq->m_Data[pos], pq->m_Data[newPos]) > 0 ) {
                     void* tmp = pq->m_Data[pos];
                     pq->m_Data[pos] = pq->m_Data[newPos];
                     pq->m_Data[newPos] = tmp;
@@ -97,7 +97,7 @@ void mpPushPQ( mpPriorityQueue* pq, void* element ) {
     while( !inPlace && pos > 0) {
         inPlace = 1;
         unsigned short parent = (pos-1)/2;
-        if( (pos-1)/2 >= 0 && pq->m_Comparator( pq->m_Data[pos], pq->m_Data[parent]) ) {
+        if( (pos-1)/2 >= 0 && pq->m_Comparator( pq->m_Data[pos], pq->m_Data[parent]) < 0)  {
                 void* tmp = pq->m_Data[pos];
                 pq->m_Data[pos] = pq->m_Data[parent];
                 pq->m_Data[parent] = tmp;

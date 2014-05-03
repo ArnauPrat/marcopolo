@@ -28,7 +28,7 @@
 static mpPriorityQueue* pq;
 
 static int mpCompareInt( void* a, void* b) {
-    return *(int*)a - *(int*)b <= 0;
+    return *(int*)a - *(int*)b;
 }
 
 static int* values = NULL;
