@@ -95,6 +95,7 @@ void mpInsertSS( mpSortedSet* ss, void* element) {
 
 static mpSortedSetNode* _mpRemoveSS( mpSortedSet* ss, mpSortedSetNode* root, void* element ) {
     if( ss->m_Comparator(root->m_Data, element ) == 0 ) {
+      assert( root->m_Data == element );
       if( root->m_Left != NULL ) {
         root->m_Data = root->m_Left->m_Data;
         root->m_Left = _mpRemoveSS( ss, root->m_Left, root->m_Left->m_Data );
@@ -148,7 +149,7 @@ static mpSortedSetNode* mpFindSS( mpSortedSet* ss, mpSortedSetNode* root, void* 
   int comp = ss->m_Comparator( root->m_Data, element );
   if( comp == 0 )  {
     return root; 
-  } else if( comp > 0  && root->m_Left != NULL ) { return  mpFindSS( ss, root->m_Left, element ); }
+  } else if( comp > 0  && root->m_Left != NULL ) { return mpFindSS( ss, root->m_Left, element ); }
     else if( comp < 0 && root->m_Right != NULL ) { return mpFindSS( ss, root->m_Right, element ); }
   return NULL;
 }

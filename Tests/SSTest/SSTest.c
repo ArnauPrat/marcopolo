@@ -44,6 +44,8 @@ void mpInsertSSTest() {
     int i =0;
     for(;i < size; ++i) {
         mpInsertSS(ss, (void*)&values[i]); 
+        mpNextSS(ss,(void*)&values[i]);
+        mpPreviousSS(ss,(void*)&values[i]);
     }
 }
 

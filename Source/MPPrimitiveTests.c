@@ -34,8 +34,6 @@ static int max(float a, float b) {
     return res < 1.0 ? b : a;
 }
 
-
-
 int    mpTestAABBvsAABB(const mpAABB* a, const mpAABB* b) {
     if( (a->m_Center.m_X + a->m_ExtX) < (b->m_Center.m_X - b->m_ExtX) ||
             (b->m_Center.m_X + b->m_ExtX) < (a->m_Center.m_X - a->m_ExtX) ) return 0;
@@ -45,7 +43,7 @@ int    mpTestAABBvsAABB(const mpAABB* a, const mpAABB* b) {
 }
 
 int    mpTestSegvsSeg(const mpPoint* a1, const mpPoint* a2, const mpPoint* b1, const mpPoint* b2, mpPoint* intersection) {
-    if(max(a1->m_X,a2->m_X) < min(b1->m_X,b2->m_X)) return 0;
+    if(max(a1->m_X,a2->m_X) < min(b1->m_X,b2->m_X)) return 0; // early check if the intersection is possible. X projection of both segments have to overlapp.
     float s1 = (a1->m_Y - a2->m_Y) / (a1->m_X - a2->m_X); // we compute the slope of the line where the first segment lies y = s1*x + t1
     if(a1->m_X == a2->m_X ) s1 = 0.0;
     float s2 = (b1->m_Y - b2->m_Y) / (b1->m_X - b2->m_X); // we compute the slope of the line where the second segment lies y = s2*x + t2 

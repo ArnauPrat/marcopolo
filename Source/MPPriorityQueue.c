@@ -26,7 +26,7 @@ Copyright notice:
 #include <assert.h>
 
 
-mpPriorityQueue* mpAllocatePQ( unsigned short capacity, int (*comparator)( void*, void* ) ) {
+mpPriorityQueue* mpAllocatePQ( short capacity, int (*comparator)( void*, void* ) ) {
     assert( comparator != NULL ); 
     assert( capacity > 0 );
     mpPriorityQueue* pq = (mpPriorityQueue*)malloc(sizeof(mpPriorityQueue));
@@ -90,14 +90,14 @@ void mpPushPQ( mpPriorityQueue* pq, void* element ) {
         pq->m_Data = temp;
         pq->m_Capacity = newCapacity;
     }
-    unsigned short pos = pq->m_Size;
+    short pos = pq->m_Size;
     pq->m_Data[pos] = element;
     pq->m_Size += 1;
     int inPlace = 0;
     while( !inPlace && pos > 0) {
         inPlace = 1;
-        unsigned short parent = (pos-1)/2;
-        if( (pos-1)/2 >= 0 && pq->m_Comparator( pq->m_Data[pos], pq->m_Data[parent]) < 0)  {
+        short parent = (pos-1)/2;
+        if( (pos-1)/2 >= 0 && pq->m_Comparator( pq->m_Data[pos], pq->m_Data[parent]) < 0 )  {
                 void* tmp = pq->m_Data[pos];
                 pq->m_Data[pos] = pq->m_Data[parent];
                 pq->m_Data[parent] = tmp;

@@ -26,15 +26,15 @@ Copyright notice:
 ///< @brief This struct represents a priority queue.
 typedef struct _mpPriorityQueue {
   void**            m_Data;                         ///< @brief The array containing the data.  
-  unsigned short    m_Capacity;                     ///< @brief The capacity of the priority queue.
-  unsigned short    m_Size;                         ///< @brief The size of the priority queue. 
+  short    m_Capacity;                     ///< @brief The capacity of the priority queue.
+  short    m_Size;                         ///< @brief The size of the priority queue. 
   int               (*m_Comparator)( void*, void*); ///< @brief The comparator function.
 } mpPriorityQueue;
 
 /// @brief Allocates a priority queue.
 /// @param[in] capacity The initial capacity of the priority queue.
 /// @param[in] comparator The comparator function used to set the priority between elements.
-mpPriorityQueue* mpAllocatePQ( unsigned short capacity, int (*comparator)( void*, void* ) ); 
+mpPriorityQueue* mpAllocatePQ( short capacity, int (*comparator)( void*, void* ) ); 
 
 /// @brief            Frees a priority queue.
 /// @param[in,out] pq The priority queue frees.
