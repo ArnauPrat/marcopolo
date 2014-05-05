@@ -25,13 +25,11 @@ Copyright notice:
 #include <assert.h>
 
 static int min(float a, float b) {
-    float res = a - b; 
-    return res < 1.0 ? a : b;
+    return ( a-b ) < 0.0 ? a : b;
 }
 
 static int max(float a, float b) {
-    float res = a - b; 
-    return res < 1.0 ? b : a;
+    return ( a-b ) < 0.0 ? b : a;
 }
 
 int    mpTestAABBvsAABB(const mpAABB* a, const mpAABB* b) {
@@ -42,28 +40,54 @@ int    mpTestAABBvsAABB(const mpAABB* a, const mpAABB* b) {
     return 1;
 }
 
-int    mpTestSegvsSeg(const mpPoint* a1, const mpPoint* a2, const mpPoint* b1, const mpPoint* b2, mpPoint* intersection) {
-    if(max(a1->m_X,a2->m_X) < min(b1->m_X,b2->m_X)) return 0; // early check if the intersection is possible. X projection of both segments have to overlapp.
-    float s1 = (a1->m_Y - a2->m_Y) / (a1->m_X - a2->m_X); // we compute the slope of the line where the first segment lies y = s1*x + t1
-    if(a1->m_X == a2->m_X ) s1 = 0.0;
-    float s2 = (b1->m_Y - b2->m_Y) / (b1->m_X - b2->m_X); // we compute the slope of the line where the second segment lies y = s2*x + t2 
-    if(b1->m_X == b2->m_X ) s2 = 0.0;
-    if(s1 == s2 ) return 0;    // check if both segments are parallel.
-    float t1 = a1->m_Y - s1*a1->m_X;    // we compute the other parameter of both equations
-    float t2 = b1->m_Y - s2*b1->m_X;
-    float x = (t2 - t1) / (s2 - s1);    // we solve the equation system for x
-    if(x < max(min(a1->m_X,a2->m_X), min(b1->m_X,b2->m_X) ) ||
-            min(max(a1->m_X, a2->m_X), max(b1->m_X, b2->m_X))) { // we check if the intersection is within the ranges of the segments.
-        return 0;
-    }
-    intersection->m_X = x;
-    intersection->m_Y = s1*x+t1;
-    return 1;
+float mpPseudoCrossProduct( const mpVector* v1, const mpVector* v2 ) {
+    return v1->m_X*v2->m_Y - v1->m_Y*v2->m_X;
 }
 
+float mpDotProduct( const mpVector* v1, const mpVector* v2 ) {
+    return v1->m_X*v2->m_X + v1->m_Y*v2->m_Y;
+}
+
+int    mpTestSegvsSeg(const mpPoint* a1, const mpPoint* a2, const mpPoint* b1, const mpPoint* b2, mpPoint* intersection) {
+    if(max(a1->m_X,a2->m_X) < min(b1->m_X,b2->m_X) && max(b1->m_X,b2->m_X) < min(a1->m_X,a2->m_X) ) return 0; // early check if the intersection is possible. X projection of both segments have to overlapp.
+    mpVector r = { a2->m_X-a1->m_X, a2->m_Y - a1->m_Y};
+//    printf("r: %f %f\n", r.m_X, r.m_Y);
+    mpVector s = { b2->m_X-b1->m_X, b2->m_Y - b1->m_Y};
+//    printf("s: %f %f\n", s.m_X, s.m_Y);
+    mpVector pq = { b1->m_X-a1->m_X, b1->m_Y - a1->m_Y};
+//    printf("pq:  %f %f\n", pq.m_X, pq.m_Y);
+    float uNumerator = mpPseudoCrossProduct(&pq,&r);
+    float denominator = mpPseudoCrossProduct(&r,&s);
+    if( (uNumerator == 0) && (denominator == 0) ) {
+        float tmp1, tmp2;
+        tmp1 = mpDotProduct(&pq,&r);
+        mpVector qp = { a1->m_X-b1->m_X, a1->m_Y - b1->m_Y};
+        tmp2 = mpDotProduct(&qp,&s);
+        float rdotr, sdots;
+        rdotr = mpDotProduct(&r, &r);
+        sdots = mpDotProduct(&s, &s);
+        if( !(((tmp1 >= 0) && (tmp2 <= rdotr)) || ((tmp2 >= 0) && (tmp2 <= sdots))) ) {
+            return 0;
+        }
+    }
+
+    if( denominator == 0 ) return 0;
+
+    float u = uNumerator / denominator;
+    float t = mpPseudoCrossProduct(&pq,&s) / denominator;
+//    printf("t %f\n", t);
+    if( (t <= 1) && (t>= 0) && (u<=1) && (u>=0) ) {
+        intersection->m_X = a1->m_X + t*r.m_X;
+        intersection->m_Y = a1->m_Y + t*r.m_Y;
+        return 1;
+    }
+    return 0;
+}
+
+
 int    mpTestPointvsPoly(const mpPoint* point, const mpPolygon* poly) {
-    unsigned short i; 
-    unsigned short count = 0;
+    short i; 
+    short count = 0;
     mpAABB bb = mpExtractAABB(poly);
     mpPoint other = {point->m_X+bb.m_ExtX*2,point->m_Y};
     for( i = 0; i < poly->m_NumVertices;++i) {

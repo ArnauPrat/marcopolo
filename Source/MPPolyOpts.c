@@ -202,6 +202,10 @@ static void ExtractAndPushEvents( mpPriorityQueue* pq, const mpPolygon* poly ) {
     }
 }
 
+static void PrintEvent( mpSweepEvent* event ) {
+    printf("Event %p with point %f %f is left %d\n", event, event->m_Point.m_X, event->m_Point.m_Y, event->m_Left);
+}
+
 /// @brief Tests if two segments represented by four sweep events intersect. If so, new
 ///        new segments are created and inserted into a priority queue. 
 /// @param[in] pq The priority queue to add the events to.
@@ -214,45 +218,67 @@ static void mpTestIntersection(mpPriorityQueue* pq, mpSweepEvent* a1, mpSweepEve
     mpPoint intersectionPoint;
     if(!mpTestSegvsSeg(&a1->m_Point,&a2->m_Point,&b1->m_Point,&b2->m_Point,&intersectionPoint)) return;
 
-    // Creating segment a1 <-> intersectionPoint
-    mpSweepEvent* interEvent = (mpSweepEvent*)malloc(sizeof(mpSweepEvent));
-    interEvent->m_Point = intersectionPoint;
-    interEvent->m_Other = a1;
-    interEvent->m_Left = 0;
-    interEvent->m_Polygon = a1->m_Polygon;
-    a1->m_Other = interEvent;
-    mpPushPQ(pq,interEvent);
+    if( !mpComparePoints(&a1->m_Point,&intersectionPoint) && !mpComparePoints(&a2->m_Point,&intersectionPoint) ) {
+        // Creating segment a1 <-> intersectionPoint
+        mpSweepEvent* interEvent = (mpSweepEvent*)malloc(sizeof(mpSweepEvent));
+        interEvent->m_Point = intersectionPoint;
+        interEvent->m_Other = a1;
+        interEvent->m_Left = 0;
+        interEvent->m_Polygon = a1->m_Polygon;
+        a1->m_Other = interEvent;
+        mpPushPQ(pq,interEvent);
+//        printf("---\n");
+//        PrintEvent(a1);
+//        PrintEvent(interEvent);
+//        printf("---\n");
 
-    // Creating segment intersectionPoint <-> a2 
-    interEvent = (mpSweepEvent*)malloc(sizeof(mpSweepEvent));
-    interEvent->m_Point = intersectionPoint;
-    interEvent->m_Other = a2;
-    interEvent->m_Left = 1;
-    interEvent->m_Polygon = a2->m_Polygon;
-    a2->m_Other = interEvent;
-    mpPushPQ(pq,interEvent);
+        // Creating segment intersectionPoint <-> a2 
+        interEvent = (mpSweepEvent*)malloc(sizeof(mpSweepEvent));
+        interEvent->m_Point = intersectionPoint;
+        interEvent->m_Other = a2;
+        interEvent->m_Left = 1;
+        interEvent->m_Polygon = a2->m_Polygon;
+        a2->m_Other = interEvent;
+        mpPushPQ(pq,interEvent);
+//        printf("---\n");
+//        PrintEvent(interEvent);
+//        PrintEvent(a2);
+//        printf("---\n");
+    }
 
-    // Creating segment b1 <-> intersectionPoint
-    interEvent = (mpSweepEvent*)malloc(sizeof(mpSweepEvent));
-    interEvent->m_Point = intersectionPoint;
-    interEvent->m_Other = b1;
-    interEvent->m_Left = 0;
-    interEvent->m_Polygon = a1->m_Polygon;
-    b1->m_Other = interEvent;
-    mpPushPQ(pq,interEvent);
+    if( !mpComparePoints(&b1->m_Point,&intersectionPoint) && !mpComparePoints(&b2->m_Point,&intersectionPoint) ) {
+        // Creating segment b1 <-> intersectionPoint
+        mpSweepEvent* interEvent = (mpSweepEvent*)malloc(sizeof(mpSweepEvent));
+        interEvent->m_Point = intersectionPoint;
+        interEvent->m_Other = b1;
+        interEvent->m_Left = 0;
+        interEvent->m_Polygon = a1->m_Polygon;
+        b1->m_Other = interEvent;
+        mpPushPQ(pq,interEvent);
+//        printf("---\n");
+//        PrintEvent(a1);
+//        PrintEvent(interEvent);
+//        printf("---\n");
 
-    // Creating segment intersectionPoint <-> b2 
-    interEvent = (mpSweepEvent*)malloc(sizeof(mpSweepEvent));
-    interEvent->m_Point = intersectionPoint;
-    interEvent->m_Other = b2;
-    interEvent->m_Left = 1;
-    interEvent->m_Polygon = b2->m_Polygon;
-    b2->m_Other = interEvent;
-    mpPushPQ(pq,interEvent);
-    printf("INTERSECT\n");
+        // Creating segment intersectionPoint <-> b2 
+        interEvent = (mpSweepEvent*)malloc(sizeof(mpSweepEvent));
+        interEvent->m_Point = intersectionPoint;
+        interEvent->m_Other = b2;
+        interEvent->m_Left = 1;
+        interEvent->m_Polygon = b2->m_Polygon;
+        b2->m_Other = interEvent;
+        mpPushPQ(pq,interEvent);
+//        printf("---\n");
+//        PrintEvent(interEvent);
+//        PrintEvent(b2);
+//        printf("---\n");
+    }
+
+//    printf( "INTERSECT at %f %f\n", intersectionPoint.m_X, intersectionPoint.m_Y );
 }
 
 int mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPolygon** polygonOut ) {
+    printf("%p %p\n", polygonA, polygonB);
     short numEventsA = polygonA->m_NumVertices*2;
     short numEventsB = polygonB->m_NumVertices*2;
     mpPriorityQueue* pq = mpAllocatePQ( (numEventsA + numEventsB) * 2, CompareSweepEvents );
@@ -267,43 +293,47 @@ int mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPoly
     mpSortedSet* ss = mpAllocateSS(CompareSweepEventsByY);
     mpSweepEvent* currentEvent = NULL;
     while( (currentEvent = mpPopPQ(pq)) != NULL ) {
-        printf("START ITERATION\n");
+ //       printf("START ITERATION\n");
         if(currentEvent->m_Left) {
             mpInsertSS(ss,currentEvent);
             mpSweepEvent* previous = mpPreviousSS(ss,currentEvent);
             mpSweepEvent* next = mpNextSS(ss,currentEvent);
             // Check for intersection with previous
             
-            printf("Insert %p with point (%f %f) <-> (%f %f)\n",
-                    currentEvent, currentEvent->m_Point.m_X, currentEvent->m_Point.m_Y,
-                    currentEvent->m_Other->m_Point.m_X, currentEvent->m_Other->m_Point.m_Y );
+//            printf("Insert %p with point (%f %f) <-> (%f %f)\n",
+//                    currentEvent, currentEvent->m_Point.m_X, currentEvent->m_Point.m_Y,
+//                    currentEvent->m_Other->m_Point.m_X, currentEvent->m_Other->m_Point.m_Y );
 
             if(previous && (previous->m_Polygon != currentEvent->m_Polygon)){
-                printf("Testing intersection with %p with point (%f %f) <-> (%f %f)\n",previous, previous->m_Point.m_X, previous->m_Point.m_Y,
-                                                                                     previous->m_Other->m_Point.m_X, previous->m_Other->m_Point.m_Y );
+//                printf("Testing intersection with %p with point (%f %f) <-> (%f %f)\n",previous, previous->m_Point.m_X, previous->m_Point.m_Y,
+                                                                                     //previous->m_Other->m_Point.m_X, previous->m_Other->m_Point.m_Y );
                 mpTestIntersection(pq,previous, previous->m_Other, currentEvent, currentEvent->m_Other);
             }
 
             // Check for intersection with next 
             if(next && (next->m_Polygon != currentEvent->m_Polygon)){ 
-                printf("Testing intersection with %p with point (%f %f) <-> (%f %f)\n",next, next->m_Point.m_X, next->m_Point.m_Y,
-                                                                                     next->m_Other->m_Point.m_X, next->m_Other->m_Point.m_Y );
+//                printf("Testing intersection with %p with point (%f %f) <-> (%f %f)\n",next, next->m_Point.m_X, next->m_Point.m_Y,
+//                                                                                     next->m_Other->m_Point.m_X, next->m_Other->m_Point.m_Y );
                 mpTestIntersection(pq, next, next->m_Other, currentEvent, currentEvent->m_Other);
             }
-            printf("End actions %p\n",currentEvent);
+//            printf("End actions %p\n",currentEvent);
         } else { // The event is a right endpoint.
             mpSweepEvent* leftEndpoint = currentEvent->m_Other;
-            printf("Remove %p -> %p\n",currentEvent, leftEndpoint);
+//            printf("Remove %p -> %p\n",currentEvent, leftEndpoint);
             mpSweepEvent* previous = mpPreviousSS(ss,leftEndpoint);
             mpSweepEvent* next = mpNextSS(ss,leftEndpoint);
             // Check for intersection between previous and next 
             if( previous && next ) {
+ //               printf("Testing intersection between %p and %p, with points (%f %f) <-> (%f %f) and (%f %f) <-> (%f %f)\n", 
+//                        previous, next, previous->m_Point.m_X, previous->m_Point.m_Y, previous->m_Other->m_Point.m_X, previous->m_Other->m_Point.m_Y,
+ //                       next->m_Point.m_X, next->m_Point.m_Y, next->m_Other->m_Point.m_X, next->m_Other->m_Point.m_Y);
                 mpTestIntersection(pq,previous, previous->m_Other, next, next->m_Other);
             }
 
             mpRemoveSS(ss,leftEndpoint);
             // Test if leftEndpoint <-> currentEvent segment is inside the other polygon.
             mpPolygon* poly = leftEndpoint->m_Polygon == polygonA ? (mpPolygon*)polygonB : (mpPolygon*)polygonA;
+            printf("Testing %f %f <-> %f %f inside %p\n", leftEndpoint->m_Point.m_X, leftEndpoint->m_Point.m_Y, currentEvent->m_Point.m_X, currentEvent->m_Point.m_Y, poly);
             if(!mpTestPointvsPoly(&leftEndpoint->m_Point, poly) || !mpTestPointvsPoly(&currentEvent->m_Point, poly)) {
                 int i;
                 int found = 0;
@@ -324,6 +354,8 @@ int mpPolygonUnion( const mpPolygon* polygonA, const mpPolygon* polygonB, mpPoly
                     chains[chainsSize]=mpAllocatePointChain(&leftEndpoint->m_Point, &currentEvent->m_Point);
                     chainsSize++;
                 }
+            } else  {
+                printf("INSIDE\n");
             }
             // Free leftEndpoint and currentEvent
             free(leftEndpoint);

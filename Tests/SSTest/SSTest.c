@@ -125,7 +125,7 @@ int main( int argc, char** argv ) {
     if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpNextSS()", mpNextSSTest ))
         goto error;
 
-    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpNextSS()", mpPreviousSSTest ))
+    if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpPreviousSS()", mpPreviousSSTest ))
         goto error;
 
     if (NULL == CU_add_test(pSuite, "MPSortedSet.h: mpRemoveSS()", mpRemoveSSTest ))
