@@ -49,8 +49,7 @@ typedef struct _mpNavMesh {
     /// @brief An axis aligned bounding box.
 typedef struct _mpAABB {
   mpPoint   m_Center;   ///< @brief The center of the bounding box.
-  float     m_ExtX;     ///< @brief The extension in the X axis.
-  float     m_ExtY;     ///< @brief The extension in the Y axis.
+  mpPoint   m_Ext;     ///< @brief The extension in the X axis.
 } mpAABB;
 
 /// @brief Allocates a polygon.

@@ -33,10 +33,10 @@ static int max(float a, float b) {
 }
 
 int    mpTestAABBvsAABB(const mpAABB* a, const mpAABB* b) {
-    if( (a->m_Center.m_X + a->m_ExtX) < (b->m_Center.m_X - b->m_ExtX) ||
-            (b->m_Center.m_X + b->m_ExtX) < (a->m_Center.m_X - a->m_ExtX) ) return 0;
-    if( (a->m_Center.m_Y + a->m_ExtY) < (b->m_Center.m_Y - b->m_ExtY) ||
-            (b->m_Center.m_Y + b->m_ExtY) < (a->m_Center.m_Y - a->m_ExtY) ) return 0;
+    if( (a->m_Center.m_X + a->m_Ext.m_X) < (b->m_Center.m_X - b->m_Ext.m_X) ||
+            (b->m_Center.m_X + b->m_Ext.m_X) < (a->m_Center.m_X - a->m_Ext.m_X) ) return 0;
+    if( (a->m_Center.m_Y + a->m_Ext.m_Y) < (b->m_Center.m_Y - b->m_Ext.m_Y) ||
+            (b->m_Center.m_Y + b->m_Ext.m_Y) < (a->m_Center.m_Y - a->m_Ext.m_Y) ) return 0;
     return 1;
 }
 
@@ -86,23 +86,42 @@ int    mpTestSegvsSeg(const mpPoint* a1, const mpPoint* a2, const mpPoint* b1, c
 
 
 int    mpTestPointvsPoly(const mpPoint* point, const mpPolygon* poly) {
-    short i; 
     short count = 0;
-    mpAABB bb = mpExtractAABB(poly);
-    mpPoint other = {point->m_X+bb.m_ExtX*2,point->m_Y};
-    for( i = 0; i < poly->m_NumVertices;++i) {
-        mpPoint intersection;
-        mpTestSegvsSeg(point,&other,&poly->m_Vertices[i],&poly->m_Vertices[(i+1)%poly->m_NumVertices],&intersection);
-        if(mpComparePoints(&intersection,&poly->m_Vertices[i])) {
-            mpPoint aux = {poly->m_Vertices[i].m_X, poly->m_Vertices[i].m_Y+0.00000001};
-            if(mpTestSegvsSeg(point,&other,&aux,&poly->m_Vertices[(i+1)%poly->m_NumVertices],&intersection)) count++;
-        } else if(mpComparePoints(&intersection,&poly->m_Vertices[(i+1)%poly->m_NumVertices])) {
-            mpPoint aux = {poly->m_Vertices[(i+1)%poly->m_NumVertices].m_X, poly->m_Vertices[(i+1)%poly->m_NumVertices].m_Y+0.00000001};
-            if(mpTestSegvsSeg(point,&other,&poly->m_Vertices[i],&aux,&intersection)) count++;
-        } else {
+//    printf("point: %f %f\n", point->m_X, point->m_Y);
+    short i; 
+    short j;
+    for( i = 0, j = poly->m_NumVertices - 1; i < poly->m_NumVertices; j=i++ ) {
+        mpPoint* pointA = &poly->m_Vertices[j];
+        mpPoint* pointB = &poly->m_Vertices[i];
+//        printf("----\n");
+//        printf("pointA %f %f\n", pointA->m_X, pointA->m_Y);
+//        printf("pointB %f %f\n", pointB->m_X, pointB->m_Y);
+        if( (( (point->m_Y) <= pointA->m_Y) && ((point->m_Y) >= pointB->m_Y)) || 
+               (( (point->m_Y) >= pointA->m_Y) && ((point->m_Y) <= pointB->m_Y))) {
+            if( pointA->m_Y != pointB->m_Y ) {
+                mpVector rq = {pointB->m_X - pointA->m_X, pointB->m_Y - pointA->m_Y};
+                mpVector rp = {point->m_X - pointA->m_X, point->m_Y - pointA->m_Y};
+//                printf("point %f %f\n", point->m_X, point->m_Y);
+//                printf("rq %f %f\n", rq.m_X, rq.m_Y);
+//                printf("rp %f %f\n", rp.m_X, rp.m_Y);
+//                printf("%f\n",((rp.m_X*rq.m_Y) - (rq.m_X*rp.m_Y)));
+//                printf("%f %f\n",point->m_X,((rq.m_X*rp.m_Y)/rq.m_Y + pointA->m_X));
+                //if( point->m_X <= ((rq.m_X*rp.m_Y)/rq.m_Y + pointA->m_X) ) {
+                if( (mpPseudoCrossProduct(&rp,&rq) <= 0.0 && rq.m_Y > 0.0) ||
+                    (mpPseudoCrossProduct(&rp,&rq) > 0.0 && rq.m_Y < 0.0)) {
+//                    printf("INTERSECT\n");
+                    count++;
+                }
+            }
+        }/* else if( ((point->m_Y == pointA->m_Y) && (point->m_Y >= pointB->m_Y) && (point->m_X <= pointA->m_X)) ||
+                   ((point->m_Y == pointB->m_Y) && (point->m_Y >= pointA->m_Y) && (point->m_X <= pointB->m_X)) ) {
+            printf("INTERSECT\n");
             count++;
-        }
+
+        }*/
+//            printf("----\n");
     }
+//    printf("Number of intersections: %d\n", count);
     return count % 2 != 0 ? 1 : 0;
 }
 

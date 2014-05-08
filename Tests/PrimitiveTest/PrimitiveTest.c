@@ -27,11 +27,73 @@
 #include <stdlib.h>
 #include <CUnit/Basic.h>
 
-mpPoint verticesA[4] = {{0.0, 0.0},{0.0, 1.0},{1.0, 1.0},{1.0, 0.0}};
-mpPoint point = {0.0,0.0};
+mpPoint verticesA[4] = {{0.0, 0.0},{1.0, 0.0},{1.0, 1.0},{0.0, 1.0}};
 mpPolygon* polygon = NULL;
 
-void mpPointvsPolyTest() {
+void mpPointsOnCorners() {
+    mpPoint point;
+    point.m_X = 0.0;
+    point.m_Y = 0.0;
+    CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
+    point.m_X = 0.0;
+    point.m_Y = 1.0;
+    CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
+    point.m_X = 1.0;
+    point.m_Y = 1.0;
+    CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
+    point.m_X = 1.0;
+    point.m_Y = 0.0;
+    CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
+}
+
+void mpInternalPoints() {
+    mpPoint point;
+    point.m_X = 0.5;
+    point.m_Y = 0.5;
+    CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
+    point.m_X = 0.2;
+    point.m_Y = 0.2;
+    CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
+    point.m_X = 0.7;
+    point.m_Y = 0.7;
+    CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
+    point.m_X = 0.2;
+    point.m_Y = 0.7;
+    CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
+    point.m_X = 0.7;
+    point.m_Y = 0.2;
+    CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
+}
+
+void mpExternalPoints() {
+    mpPoint point;
+    point.m_X = 0.5;
+    point.m_Y = 1.5;
+    CU_ASSERT( !mpTestPointvsPoly(&point, polygon) );
+    point.m_X = 1.5;
+    point.m_Y = 0.5;
+    CU_ASSERT( !mpTestPointvsPoly(&point, polygon) );
+    point.m_X = 0.5;
+    point.m_Y = -0.5;
+    CU_ASSERT( !mpTestPointvsPoly(&point, polygon) );
+    point.m_X = -0.5;
+    point.m_Y = 0.5;
+    CU_ASSERT( !mpTestPointvsPoly(&point, polygon) );
+}
+
+void mpPointsOnEdges() {
+    mpPoint point;
+    point.m_X = 0.0;
+    point.m_Y = 0.5;
+    CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
+    point.m_X = 0.5;
+    point.m_Y = 1.0;
+    CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
+    point.m_X = 1.0;
+    point.m_Y = 0.5;
+    CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
+    point.m_X = 0.5;
+    point.m_Y = 0.0;
     CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
 }
 
@@ -53,7 +115,16 @@ int main( int argc, char** argv ) {
     if (NULL == pSuite) goto error;
 
     /* add the tests to the suite */ 
-    if (NULL == CU_add_test(pSuite, "Testing mpTestPointvsPoly()", mpPointvsPolyTest )) 
+    if (NULL == CU_add_test(pSuite, "Testing points on corners", mpPointsOnCorners )) 
+        goto error;
+
+    if (NULL == CU_add_test(pSuite, "Testing points on edges", mpPointsOnEdges )) 
+        goto error;
+
+    if (NULL == CU_add_test(pSuite, "Testing internal points", mpInternalPoints )) 
+        goto error;
+
+    if (NULL == CU_add_test(pSuite, "Testing external points", mpExternalPoints )) 
         goto error;
 
     /* Run all tests using the CUnit Basic interface */ 
@@ -63,7 +134,6 @@ error:
     CU_cleanup_registry();
     mpFreePolygon(polygon);
     return CU_get_error();
-
 }
 
 

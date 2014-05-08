@@ -1,7 +1,7 @@
 /**
-Copyright notice:
+  Copyright notice:
 
- (C) 2014 Arnau Prat-Perez
+  (C) 2014 Arnau Prat-Perez
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -12,21 +12,22 @@ Copyright notice:
   freely, subject to the following restrictions:
 
   1. The origin of this software must not be misrepresented; you must not
-     claim that you wrote the original software. If you use this software
-     in a product, an acknowledgment in the product documentation would be
-     appreciated but is not required.
+  claim that you wrote the original software. If you use this software
+  in a product, an acknowledgment in the product documentation would be
+  appreciated but is not required.
   2. Altered source versions must be plainly marked as such, and must not be
-     misrepresented as being the original software.
+  misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
-**/
+ **/
 
-  #include "MPUtils.h"
-  #include <stdio.h>
-  #include <stdlib.h>
-  #include <assert.h>
+#include "MPUtils.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <math.h>
 
 
-  mpAABB  mpExtractAABB( const mpPolygon* polygon ) {
+mpAABB  mpExtractAABB( const mpPolygon* polygon ) {
     assert(polygon != NULL);
     assert(polygon->m_NumVertices > 0);
     assert(polygon->m_Vertices != NULL);
@@ -38,15 +39,15 @@ Copyright notice:
     max.m_Y = polygon->m_Vertices[0].m_Y;
     int i;
     for ( i = 1; i < polygon->m_NumVertices; ++i ) {
-      if( polygon->m_Vertices[i].m_X < min.m_X ) min.m_X = polygon->m_Vertices[i].m_X;
-      if( polygon->m_Vertices[i].m_Y < min.m_Y ) min.m_Y = polygon->m_Vertices[i].m_Y;
-      if( polygon->m_Vertices[i].m_X > max.m_X ) max.m_X = polygon->m_Vertices[i].m_X;
-      if( polygon->m_Vertices[i].m_Y > max.m_Y ) max.m_Y = polygon->m_Vertices[i].m_Y;
+        if( polygon->m_Vertices[i].m_X < min.m_X ) min.m_X = polygon->m_Vertices[i].m_X;
+        if( polygon->m_Vertices[i].m_Y < min.m_Y ) min.m_Y = polygon->m_Vertices[i].m_Y;
+        if( polygon->m_Vertices[i].m_X > max.m_X ) max.m_X = polygon->m_Vertices[i].m_X;
+        if( polygon->m_Vertices[i].m_Y > max.m_Y ) max.m_Y = polygon->m_Vertices[i].m_Y;
     }
     mpAABB aabb;
-    aabb.m_ExtX = abs((max.m_X - min.m_X) / 2.0f);
-    aabb.m_ExtY = abs((max.m_Y - min.m_Y) / 2.0f);
-    aabb.m_Center.m_X = min.m_X + aabb.m_ExtX ;
-    aabb.m_Center.m_Y = min.m_Y + aabb.m_ExtY;
+    aabb.m_Ext.m_X = fabs((max.m_X - min.m_X) / 2.0);
+    aabb.m_Ext.m_Y = fabs((max.m_Y - min.m_Y) / 2.0);
+    aabb.m_Center.m_X = min.m_X + aabb.m_Ext.m_X;
+    aabb.m_Center.m_Y = min.m_Y + aabb.m_Ext.m_Y;
     return aabb;
-  }
+}
