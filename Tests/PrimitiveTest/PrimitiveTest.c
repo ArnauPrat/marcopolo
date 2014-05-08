@@ -97,6 +97,25 @@ void mpPointsOnEdges() {
     CU_ASSERT( mpTestPointvsPoly(&point, polygon) );
 }
 
+void mpSegmentIntersection() {
+    mpPoint pointA, 
+            pointB,
+            pointC,
+            pointD,
+            intersection;
+    pointA.m_X = 0.0;
+    pointA.m_Y = 1.0;
+    pointB.m_X = 1.0;
+    pointB.m_Y = 1.0;
+
+    pointC.m_X = 0.5;
+    pointC.m_Y = 1.0;
+    pointD.m_X = 1.5;
+    pointD.m_Y = 1.0;
+
+    CU_ASSERT( mpTestSegvsSeg(&pointA, &pointB, &pointC, &pointD, &intersection) );
+}
+
 
 int main( int argc, char** argv ) {
 
@@ -115,16 +134,19 @@ int main( int argc, char** argv ) {
     if (NULL == pSuite) goto error;
 
     /* add the tests to the suite */ 
-    if (NULL == CU_add_test(pSuite, "Testing points on corners", mpPointsOnCorners )) 
+    if (NULL == CU_add_test(pSuite, "Testing points vs polygon on corners", mpPointsOnCorners )) 
         goto error;
 
-    if (NULL == CU_add_test(pSuite, "Testing points on edges", mpPointsOnEdges )) 
+    if (NULL == CU_add_test(pSuite, "Testing points vs polygon on edges", mpPointsOnEdges )) 
         goto error;
 
-    if (NULL == CU_add_test(pSuite, "Testing internal points", mpInternalPoints )) 
+    if (NULL == CU_add_test(pSuite, "Testing internal points vs polygon", mpInternalPoints )) 
         goto error;
 
-    if (NULL == CU_add_test(pSuite, "Testing external points", mpExternalPoints )) 
+    if (NULL == CU_add_test(pSuite, "Testing external points vs polygon", mpExternalPoints )) 
+        goto error;
+
+    if (NULL == CU_add_test(pSuite, "Testing Segment vs Segment", mpSegmentIntersection )) 
         goto error;
 
     /* Run all tests using the CUnit Basic interface */ 

@@ -28,9 +28,9 @@
 
 
 int main( int argc, char** argv ) {
-    mpPoint verticesA[4] = {{0.0, 0.0},{0.0, 1.0},{1.0, 1.0},{1.0, 0.0}};
-    mpPoint verticesB[4] = {{2.0, 0.0},{2.0, 1.0},{3.0, 1.0},{3.0, 0.0}};
-    mpPoint verticesC[4] = {{0.5, 0.0},{0.5, 1.0},{1.5, 1.0},{1.5, 0.0}};
+    mpPoint verticesA[4] = {{0.0, 0.0},{1.0, 0.0},{1.0, 1.0},{0.0, 1.0}};
+    mpPoint verticesB[4] = {{2.0, 0.0},{3.0, 0.0},{3.0, 1.0},{2.0, 1.0}};
+    mpPoint verticesC[4] = {{0.5, 0.0},{1.5, 0.0},{1.5, 1.0},{0.5, 1.0}};
 
     mpPolygon* polygonA = mpAllocatePolygon(verticesA,4);   
     mpPolygon* polygonB = mpAllocatePolygon(verticesB,4);   
