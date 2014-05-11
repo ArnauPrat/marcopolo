@@ -59,15 +59,21 @@ int    mpTestSegvsSeg(const mpPoint* a1, const mpPoint* a2, const mpPoint* b1, c
     float uNumerator = mpPseudoCrossProduct(&pq,&r);
     float denominator = mpPseudoCrossProduct(&r,&s);
     if( (uNumerator == 0) && (denominator == 0) ) {
-        float tmp1, tmp2;
-        tmp1 = mpDotProduct(&pq,&r);
         mpVector qp = { a1->m_X-b1->m_X, a1->m_Y - b1->m_Y};
-        tmp2 = mpDotProduct(&qp,&s);
-        float rdotr, sdots;
-        rdotr = mpDotProduct(&r, &r);
-        sdots = mpDotProduct(&s, &s);
+        float tmp1 = mpDotProduct(&pq,&r);
+        float tmp2 = mpDotProduct(&qp,&s);
+        float rdotr = mpDotProduct(&r, &r);
+        float sdots = mpDotProduct(&s, &s);
         if( !(((tmp1 >= 0) && (tmp2 <= rdotr)) || ((tmp2 >= 0) && (tmp2 <= sdots))) ) {
+//            printf("tmp1: %f\n", tmp1);
+ //           printf("tmp2: %f\n", tmp2);
             return 0;
+        } else {
+            float t = (b1->m_X - a1->m_X) / r.m_X;
+            if( t > 1.0 || t < 0.0 ) t = (b2->m_X - a1->m_X) / r.m_X;
+            intersection->m_X = a1->m_X + t*r.m_X;
+            intersection->m_Y = a1->m_Y + t*r.m_Y;
+            return 2; // segments are colinear and overlapp.
         }
     }
 

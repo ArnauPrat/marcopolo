@@ -50,4 +50,8 @@ int mpTestSegvsSeg(const mpPoint* a1, const mpPoint* a2, const mpPoint* b1, cons
 int mpTestPointvsPoly(const mpPoint* point, const mpPolygon* poly);
 
 
+float mpPseudoCrossProduct( const mpVector* v1, const mpVector* v2 );
+
+float mpDotProduct( const mpVector* v1, const mpVector* v2 );
+
 #endif
