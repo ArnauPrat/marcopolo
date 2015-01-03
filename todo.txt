@@ -1,4 +1,5 @@
 TODO
 ----
 
+- Write more exhaustive tests for priority queue
 - Comment code of priority queue and sorted set.

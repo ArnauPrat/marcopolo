@@ -26,7 +26,7 @@ Copyright notice:
 #include <assert.h>
 
 
-mpPriorityQueue* mpAllocatePQ( short capacity, int (*comparator)( void*, void* ) ) {
+mpPriorityQueue* mpAllocatePQ( int capacity, int (*comparator)( void*, void* ) ) {
     assert( comparator != NULL ); 
     assert( capacity > 0 );
     mpPriorityQueue* pq = (mpPriorityQueue*)malloc(sizeof(mpPriorityQueue));
@@ -49,11 +49,11 @@ void* mpPopPQ( mpPriorityQueue* pq ) {
     assert( pq != NULL );
     if( pq->m_Size == 0 ) return NULL;
     void* ret = pq->m_Data[0];
-    pq->m_Size -= 1;                         // reduce the size of the queue.    
-    pq->m_Data[0] = pq->m_Data[pq->m_Size];  // put the last element into the first position.
-    if( pq->m_Size > 0 ) {                   // if the size is greater than 0, then recompute the position of the first element.
-        short inPlace = 0;
-        short pos = 0;
+    pq->m_Size -= 1;                         
+    pq->m_Data[0] = pq->m_Data[pq->m_Size];  
+    if( pq->m_Size > 0 ) {                   
+        int inPlace = 0;
+        int pos = 0;
         while( !inPlace ) {
             inPlace = 1;
             int newPos = 2*pos+1;
@@ -90,13 +90,13 @@ void mpPushPQ( mpPriorityQueue* pq, void* element ) {
         pq->m_Data = temp;
         pq->m_Capacity = newCapacity;
     }
-    short pos = pq->m_Size;
+    int pos = pq->m_Size;
     pq->m_Data[pos] = element;
     pq->m_Size += 1;
     int inPlace = 0;
     while( !inPlace && pos > 0) {
         inPlace = 1;
-        short parent = (pos-1)/2;
+        int parent = (pos-1)/2;
         if( (pos-1)/2 >= 0 && pq->m_Comparator( pq->m_Data[pos], pq->m_Data[parent]) < 0 )  {
                 void* tmp = pq->m_Data[pos];
                 pq->m_Data[pos] = pq->m_Data[parent];

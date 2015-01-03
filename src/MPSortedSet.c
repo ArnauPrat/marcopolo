@@ -91,7 +91,6 @@ void mpInsertSS( mpSortedSet* ss, void* element) {
 }
 
 
-
 static mpSortedSetNode* _mpMinSS( mpSortedSetNode* root ) {
   assert(root!=NULL);
   if( root->m_Left == NULL ) { return root; }

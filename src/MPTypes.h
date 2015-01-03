@@ -28,45 +28,45 @@ Copyright notice:
 #endif
 
 
-    /// @brief A two-dimensional vector.
+/* @brief A two-dimensional vector.*/
 typedef struct _mpVector {
-  float m_X;  ///< @brief The x coordinate of the vector.
-  float m_Y;  ///< @brief The y coordinate of the vector.
+  float m_X;  /*< @brief The x coordinate of the vector.*/
+  float m_Y;  /*< @brief The y coordinate of the vector.*/
 } mpVector;
 
 typedef mpVector mpPoint;
 
-/// @brief A polygon.
+/* @brief A polygon.*/
 typedef struct _mpPolygon {
-  mpPoint*        m_Vertices;       ///< @brief The array of vertices that form the polygon in clockwise order.
-  unsigned short  m_NumVertices;    ///< @brief The number of vertices of the polygon.
+  mpPoint*        m_Vertices;       /*< @brief The array of vertices that form the polygon in clockwise order.*/
+  unsigned short  m_NumVertices;    /*< @brief The number of vertices of the polygon.*/
 } mpPolygon;
 
-    /// @brief A navigation mesh.
+/* @brief A navigation mesh.*/
 typedef struct _mpNavMesh {
 } mpNavMesh;
 
-    /// @brief An axis aligned bounding box.
+/* @brief An axis aligned bounding box.*/
 typedef struct _mpAABB {
-  mpPoint   m_Center;   ///< @brief The center of the bounding box.
-  mpPoint   m_Ext;     ///< @brief The extension in the X axis.
+  mpPoint   m_Center;   /*< @brief The center of the bounding box.*/
+  mpPoint   m_Ext;      /*< @brief The extension in the X axis.*/
 } mpAABB;
 
-/// @brief Allocates a polygon.
-/// @param vertices The array of points that form the vertices of the polygon.
-/// @param numVertices The number of vertices in the array.
-/// @return A pointer to the allocated polygon.
+/*  @brief Allocates a polygon.
+    @param vertices The array of points that form the vertices of the polygon.
+    @param numVertices The number of vertices in the array.
+    @return A pointer to the allocated polygon. */
 mpPolygon* mpAllocatePolygon( const mpPoint* vertices, const unsigned short numVertices );
 
 
-/// @bief Frees a polygon.
-/// @param polygon The polygon to free.
+/*  @bief Frees a polygon.
+    @param polygon The polygon to free.*/
 void mpFreePolygon( mpPolygon* polygon );
 
-/// @brief Compares to points.
-/// @param[in] point1 The first point to compare.
-/// @param[in] point2 The second point to compare.
-/// @return 1 if the two points are the same. 0 otherwise.
+/* @brief Compares to points.
+   @param[in] point1 The first point to compare.
+   @param[in] point2 The second point to compare.
+   @return 1 if the two points are the same. 0 otherwise.*/
 int mpComparePoints(const mpPoint* point1, const mpPoint* point2);
 
 #endif 

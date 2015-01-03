@@ -20,7 +20,7 @@
   3. This notice may not be removed or altered from any source distribution.
  **/
 
-#include "../../Include/MPSortedSet.h"
+#include "MPSortedSet.h"
 #include <stdlib.h>
 #include <CUnit/Basic.h>
 
@@ -31,9 +31,8 @@ static int mpCompareInt( void* a, void* b) {
     return  *(int*)a - *(int*)b;
 }
 
-//static int values[10] = {1,2,3,4,5,6,7,8,9,10};
 static int* values = NULL;
-static int size = 100;
+static int size = 100000;
 
 void mpAllocateSSTest() {
     ss = mpAllocateSS( mpCompareInt ); 
@@ -89,12 +88,30 @@ void mpFreeSSTest() {
     CU_ASSERT( 1 );
 }
 
+/* Arrange the N elements of ARRAY in random order.
+ * Only effective if N is much smaller than RAND_MAX;
+ * if this may not be the case, use a better random
+ * number generator. */
+void shuffle(int *array, int n) {
+    srand(1);
+    if (n > 1)  {
+        int i;
+        for (i = 0; i < n - 1; i++) {
+            int j = i + rand() / (RAND_MAX / (n - i) + 1);
+            int t = array[j];
+            array[j] = array[i];
+            array[i] = t;
+        }
+    }
+}
+
 
 int main( int argc, char** argv ) {
 
     values = (int*)malloc(sizeof(int)*size);
     int i = 0;
     for(;i<size;++i) values[i]= i;
+    shuffle(values,size);
 
     CU_pSuite pSuite = NULL;
     ss = NULL;

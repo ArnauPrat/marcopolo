@@ -10,7 +10,7 @@ set(LIBS ${LIBS} ${CUNIT_LIBRARIES} marcopolo)
 
 if(CUNIT_FOUND)
 
-include_directories( ../../Include )
+include_directories( ../../src )
 add_executable (PQTest PQTest.c)
 set_target_properties (PQTest PROPERTIES LINK_FLAGS -Wl,-lcunit)
 target_link_libraries(PQTest ${LIBS})

@@ -20,9 +20,10 @@
   3. This notice may not be removed or altered from any source distribution.
  **/
 
-#include "../../Include/MPPriorityQueue.h"
+#include <MPPriorityQueue.h>
 #include <stdlib.h>
 #include <CUnit/Basic.h>
+#include <limits.h>
 
 
 static mpPriorityQueue* pq;
@@ -32,8 +33,8 @@ static int mpCompareInt( void* a, void* b) {
 }
 
 static int* values = NULL;
-static int size = 30000;
-static int capacity = 10;
+static const int size = 100000;
+static int capacity = 100000;
 
 void mpAllocatePQTest() {
     pq = mpAllocatePQ( capacity, mpCompareInt ); 
@@ -42,10 +43,13 @@ void mpAllocatePQTest() {
 
 void mpPushPQTest() {
     int i = 0;
+    int min = INT_MAX;
     for( i = 0; i < size; ++i ) {
         mpPushPQ( pq, &values[i] ); 
+        /*printf("Push %d\n",values[i]);*/
+        if( values[i] < min ) min = values[i];
         CU_ASSERT( pq->m_Size == i+1 );
-        CU_ASSERT( *(int*)mpPeekPQ(pq) == 0 );
+        CU_ASSERT( *(int*)mpPeekPQ(pq) == min );
     }
 }
 
@@ -60,8 +64,8 @@ void mpPopPQTest() {
     for( i = 0; i < size; ++i ) {
         int value = *(int*)mpPopPQ( pq ); 
         CU_ASSERT(pq->m_Size == (size - (i+1)));
-//        printf("%d %d\n",value,values[i]);
-        CU_ASSERT(value == values[i]);
+        /*printf("Pop %d\n",value);*/
+        CU_ASSERT(value == i);
     }
 }
 
@@ -70,12 +74,30 @@ void mpFreePQTest() {
     CU_ASSERT( 1 );
 }
 
+/* Arrange the N elements of ARRAY in random order.
+ * Only effective if N is much smaller than RAND_MAX;
+ * if this may not be the case, use a better random
+ * number generator. */
+void shuffle(int *array, int n) {
+    srand(1);
+    if (n > 1)  {
+        int i;
+        for (i = 0; i < n - 1; i++) {
+            int j = i + rand() / (RAND_MAX / (n - i) + 1);
+            int t = array[j];
+            array[j] = array[i];
+            array[i] = t;
+        }
+    }
+}
+
 
 int main( int argc, char** argv ) {
 
     values = (int*)malloc(sizeof(int)*size);
     int i = 0;
     for(;i<size;++i) values[i]= i;
+    shuffle(values, size);
 
     CU_pSuite pSuite = NULL;
     pq = NULL;
@@ -93,7 +115,6 @@ int main( int argc, char** argv ) {
     /* add the tests to the suite */ 
     if (NULL == CU_add_test(pSuite, "MPPriorityQueue.h: mpAllocatePQ()", mpAllocatePQTest )) 
         goto error;
-
 
     if (NULL == CU_add_test(pSuite, "MPPriorityQueue.h: mpPushPQ()", mpPushPQTest ))
         goto error;
@@ -114,7 +135,6 @@ error:
     free(values);
     CU_cleanup_registry();
     return CU_get_error();
-
 }
 
 

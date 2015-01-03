@@ -25,9 +25,9 @@ Copyright notice:
 
 #include "MPTypes.h"
 
-/// @brief Extracs the bounding box of a polygon.
-/// @param[in] The polygon.
-/// @return The AABB bounding box of the polygon.
+/*  @brief Extracs the bounding box of a polygon.
+    @param[in] The polygon.
+    @return The AABB bounding box of the polygon. */
 mpAABB  mpExtractAABB( const mpPolygon* polygon );
 
 #endif

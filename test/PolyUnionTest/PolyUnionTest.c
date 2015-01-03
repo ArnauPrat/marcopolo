@@ -37,7 +37,7 @@ int main( int argc, char** argv ) {
     mpPolygon* polygonC = mpAllocatePolygon(verticesC,4);   
     mpPolygon* polygonOut;
 
-//    mpPolygonUnion(polygonA,polygonB,&polygonOut);
+/*    mpPolygonUnion(polygonA,polygonB,&polygonOut);*/
     mpPolygonUnion(polygonA,polygonC,&polygonOut);
 
     mpFreePolygon(polygonA);

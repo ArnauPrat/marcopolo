@@ -26,27 +26,27 @@
 #include "MPTypes.h"
 
 
-/// @brief Tests if two AABBs specified by min/max points intersect.
-/// @param[in] minA The lower left corner of the first AABB.
-/// @param[in] maxA The upper right corner of the first AABB.
-/// @param[in] minB The lower left corner of the second AABB.
-/// @param[in] maxB The upper right corner of the second AABB.
-/// @return 1 if the two bounding boxes intersect. 0 otherwise.
+/*  @brief Tests if two AABBs specified by min/max points intersect.
+    @param[in] minA The lower left corner of the first AABB.
+    @param[in] maxA The upper right corner of the first AABB.
+    @param[in] minB The lower left corner of the second AABB.
+    @param[in] maxB The upper right corner of the second AABB.
+    @return 1 if the two bounding boxes intersect. 0 otherwise.*/
 int mpTestAABBvsAABB( const mpAABB* a, const mpAABB* b );
 
-/// @brief Tests if two segments intersect.
-/// @param[in] a1 The first point of the first segment.
-/// @param[in] a2 The second point of the first segment.
-/// @param[in] b1 The first point of the second segment.
-/// @param[in] b2 The second point of the second segment.
-/// @param[out] intersection The point at which the two segments intersect.
-/// @return 1 if the segments intersect. 0 Otherwise.
+/*   @brief Tests if two segments intersect.
+    @param[in] a1 The first point of the first segment.
+    @param[in] a2 The second point of the first segment.
+    @param[in] b1 The first point of the second segment.
+    @param[in] b2 The second point of the second segment.
+    @param[out] intersection The point at which the two segments intersect.
+    @return 1 if the segments intersect. 0 Otherwise.*/
 int mpTestSegvsSeg(const mpPoint* a1, const mpPoint* a2, const mpPoint* b1, const mpPoint* b2, mpPoint* intersection); 
 
-/// @brief Tests if a point is contained inside a polygon.
-/// @param[in] point The point to test.
-/// @param[in] poly The polygon to test.
-/// @return 1 if the point is inside the polygon. 0 otherwise.
+/*  @brief Tests if a point is contained inside a polygon.
+    @param[in] point The point to test.
+    @param[in] poly The polygon to test.
+    @return 1 if the point is inside the polygon. 0 otherwise.*/
 int mpTestPointvsPoly(const mpPoint* point, const mpPolygon* poly);
 
 
